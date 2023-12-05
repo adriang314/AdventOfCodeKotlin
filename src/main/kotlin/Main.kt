@@ -3,4 +3,5 @@ fun main() {
     println("${solution.SolutionDay02()}")
     println("${solution.SolutionDay03()}")
     println("${solution.SolutionDay04()}")
+    println("${solution.SolutionDay05()}")
 }
