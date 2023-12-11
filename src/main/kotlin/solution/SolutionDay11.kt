@@ -7,45 +7,19 @@ class SolutionDay11 : BaseSolution() {
     override val day = 11
 
     override fun task1(): String {
-        val galaxies = getGalaxies(1L)
-        val galaxyPairs = getGalaxyPairs(galaxies)
+        val universeMap = input()
+        val universe = Universe(universeMap, 1L)
+        val galaxyPairs = universe.galaxyPairs()
         val sumOfDistance = galaxyPairs.sumOf { it.distance }
         return sumOfDistance.toString()
     }
 
     override fun task2(): String {
-        val galaxies = getGalaxies(999_999L)
-        val galaxyPairs = getGalaxyPairs(galaxies)
+        val universeMap = input()
+        val universe = Universe(universeMap, 999_999L)
+        val galaxyPairs = universe.galaxyPairs()
         val sumOfDistance = galaxyPairs.sumOf { it.distance }
         return sumOfDistance.toString()
-    }
-
-    private fun getGalaxyPairs(galaxies: List<Galaxy>): List<GalaxyPair> {
-        val pairs = mutableListOf<GalaxyPair>()
-        galaxies.forEachIndexed { index1, galaxy1 ->
-            galaxies.forEachIndexed { index2, galaxy2 ->
-                if (index1 < index2)
-                    pairs.add(GalaxyPair(galaxy1, galaxy2))
-            }
-        }
-        return pairs
-    }
-
-    private fun getGalaxies(expansionSize: Long): List<Galaxy> {
-        var emptySpaces = 0L
-        return getUniverse(expansionSize).universe.mapIndexed { index, space ->
-            if (space is EmptySpace) {
-                emptySpaces++
-            }
-
-            val rowIdx = (expansionSize * emptySpaces) + (index - emptySpaces)
-            space.galaxyAt.map { Galaxy(rowIdx, it) }
-        }.flatten()
-    }
-
-    private fun getUniverse(expansionSize: Long): Universe {
-        val rawLines = input().split("\r\n", "\n")
-        return Universe(rawLines.map { Space(it, expansionSize) }.toMutableList())
     }
 
     private data class GalaxyPair(val g1: Galaxy, val g2: Galaxy) {
@@ -54,60 +28,87 @@ class SolutionDay11 : BaseSolution() {
 
     private data class Galaxy(val rowIdx: Long, val colIdx: Long)
 
-    private class EmptySpace : Space(".", 0L)
+    private class EmptyMilkyWay : MilkyWay()
 
-    private open class Space(private var space: String, private val expansionSize: Long) {
-        val galaxyAt = mutableListOf<Long>()
-        val size: Int = space.length
-        val horizontalExpansionAt = mutableListOf<Long>()
+    private open class MilkyWay(private var objects: String = "", private val expansionSize: Long = 0) {
+        val galaxyLocations = mutableListOf<Long>()
+        val size: Int = objects.length
+        var expansionLocations = emptyList<Long>()
 
         init {
             findGalaxies()
         }
 
-        fun isEmpty() = galaxyAt.isEmpty()
+        fun isEmpty() = galaxyLocations.isEmpty()
 
         private fun Char.isGalaxy() = this == '#'
 
         fun findGalaxies() {
-            galaxyAt.clear()
-            space.forEachIndexed { index, point ->
-                if (point.isGalaxy()) {
-                    val horizontalExpansions = horizontalExpansionAt.count { it < index }
-                    galaxyAt.add(index + (horizontalExpansions * expansionSize))
+            galaxyLocations.clear()
+            objects.forEachIndexed { location, obj ->
+                if (obj.isGalaxy()) {
+                    val expansionCount = expansionLocations.count { it < location }
+                    galaxyLocations.add(location + (expansionCount * this.expansionSize))
                 }
             }
         }
     }
 
-    private class Universe(val universe: MutableList<Space>) {
+    private class Universe(universeMap: String, expansionSize: Long) {
+
+        private val galaxies: List<Galaxy>
 
         init {
-            val verticalExpansions = mutableListOf<Int>()
-            universe.forEachIndexed { index, space ->
-                if (space.isEmpty()) {
-                    verticalExpansions.add(index)
+            val milkyWays = universeMap.split("\r\n", "\n").map { MilkyWay(it, expansionSize) }.toMutableList()
+
+            // find empty milky ways
+            val emptyMilkyWayLocations = mutableListOf<Int>()
+            milkyWays.forEachIndexed { location, milkyWay ->
+                if (milkyWay.isEmpty()) {
+                    emptyMilkyWayLocations.add(location)
                 }
             }
 
-            val allGalaxies = universe.map { it.galaxyAt }.flatten().distinct().sorted()
-            val horizontalExpansions = mutableListOf<Long>()
-            (0L..<universe.first.size).forEach {
-                if (!allGalaxies.contains(it))
-                    horizontalExpansions.add(it)
+            // find locations in milky ways for horizontal expansion
+            val galaxyLocations = milkyWays.map { it.galaxyLocations }.flatten().distinct().sorted()
+            val milkyWayExpansionLocations = mutableListOf<Long>()
+            (0L..<milkyWays.first.size).forEach { location ->
+                if (!galaxyLocations.contains(location))
+                    milkyWayExpansionLocations.add(location)
             }
 
-            verticalExpansions.reversed().forEach {
-                universe.add(it, EmptySpace())
+            // extend universe
+            emptyMilkyWayLocations.reversed().forEach { location ->
+                milkyWays.add(location, EmptyMilkyWay())
+            }
+            milkyWays.forEach { milkyWay ->
+                milkyWay.expansionLocations = milkyWayExpansionLocations
             }
 
-            horizontalExpansions.reversed().forEach {
-                universe.forEach { line ->
-                    line.horizontalExpansionAt.add(it)
+            // find galaxies at new universe
+            milkyWays.forEach { it.findGalaxies() }
+
+            // build galaxies
+            var emptySpaces = 0L
+            galaxies = milkyWays.mapIndexed { index, space ->
+                if (space is EmptyMilkyWay) {
+                    emptySpaces++
+                }
+
+                val rowIdx = (expansionSize * emptySpaces) + (index - emptySpaces)
+                space.galaxyLocations.map { Galaxy(rowIdx, it) }
+            }.flatten()
+        }
+
+        fun galaxyPairs(): List<GalaxyPair> {
+            val pairs = mutableListOf<GalaxyPair>()
+            galaxies.forEachIndexed { location1, galaxy1 ->
+                galaxies.forEachIndexed { location2, galaxy2 ->
+                    if (location1 < location2)
+                        pairs.add(GalaxyPair(galaxy1, galaxy2))
                 }
             }
-
-            universe.forEach { it.findGalaxies() }
+            return pairs
         }
     }
 }
