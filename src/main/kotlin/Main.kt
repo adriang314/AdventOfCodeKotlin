@@ -10,5 +10,6 @@ fun main() {
 //      println("${solution.SolutionDay09()}")
 //      println("${solution.SolutionDay10()}")
 //      println("${solution.SolutionDay11()}")
-    println("${solution.SolutionDay12()}")
+  //  println("${solution.SolutionDay12()}")
+    println("${solution.SolutionDay13()}")
 }
