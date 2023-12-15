@@ -20,8 +20,8 @@ class SolutionDay14 : BaseSolution() {
                 val beforeCycle = cachedResult.index
                 val cycleLength = i - cachedResult.index
                 val limitWithoutNotCycledAttempts = 1_000_000_000L - beforeCycle
-                val rollsLeftToDo = limitWithoutNotCycledAttempts % cycleLength
-                for (j in 0..<rollsLeftToDo - 1) {
+                val tiltsLeftToDo = limitWithoutNotCycledAttempts % cycleLength
+                for (j in 0..<tiltsLeftToDo - 1) {
                     board.tilt()
                 }
                 return board.totalValue().toString()
