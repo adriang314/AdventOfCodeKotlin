@@ -16,5 +16,8 @@ fun main() {
     //println("${solution.SolutionDay15()}")
     // println("${solution.SolutionDay16()}")
     //println("${solution.SolutionDay17()}")
-    println("${solution.SolutionDay18()}")
+    //println("${solution.SolutionDay18()}")
+    //println("${solution.SolutionDay19()}")
+    println("${solution.SolutionDay20()}")
+
 }
