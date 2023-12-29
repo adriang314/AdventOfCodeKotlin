@@ -1,4 +1,8 @@
-package solution
+package year2023
+
+fun main() {
+    println("${SolutionDay09()}")
+}
 
 class SolutionDay09 : BaseSolution() {
     override val day = 9

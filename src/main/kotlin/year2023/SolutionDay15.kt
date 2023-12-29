@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 private val hashing = Hashing()
+
+fun main() {
+    println("${SolutionDay15()}")
+}
 
 class SolutionDay15 : BaseSolution() {
 

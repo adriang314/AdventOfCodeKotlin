@@ -1,10 +1,14 @@
-package solution
+package year2023
 
 private var iteration = 0L
 private var iterationBh = 0L
 private var iterationSh = 0L
 private var iterationJf = 0L
 private var iterationMz = 0L
+
+fun main() {
+    println("${SolutionDay20()}")
+}
 
 class SolutionDay20 : BaseSolution() {
 

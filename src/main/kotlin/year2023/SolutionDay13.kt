@@ -1,7 +1,11 @@
-package solution
+package year2023
 
 import java.lang.RuntimeException
 import kotlin.math.min
+
+fun main() {
+    println("${SolutionDay13()}")
+}
 
 class SolutionDay13 : BaseSolution() {
 

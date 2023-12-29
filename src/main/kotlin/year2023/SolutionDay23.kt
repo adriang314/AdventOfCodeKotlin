@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import kotlin.collections.ArrayDeque
+
+fun main() {
+    println("${SolutionDay23()}")
+}
 
 class SolutionDay23 : BaseSolution() {
 

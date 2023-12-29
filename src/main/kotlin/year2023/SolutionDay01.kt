@@ -1,4 +1,4 @@
-package solution
+package year2023
 
 private val mappingDigits = mapOf(
     "1" to 1, "2" to 2, "3" to 3, "4" to 4, "5" to 5,
@@ -10,7 +10,12 @@ private val mappingNames = mapOf(
     "six" to 6, "seven" to 7, "eight" to 8, "nine" to 9
 )
 
+fun main() {
+    println("${SolutionDay01()}")
+}
+
 class SolutionDay01 : BaseSolution() {
+
 
     override val day = 1
 

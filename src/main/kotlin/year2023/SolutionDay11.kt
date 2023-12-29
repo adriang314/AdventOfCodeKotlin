@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import kotlin.math.abs
+
+fun main() {
+    println("${SolutionDay11()}")
+}
 
 class SolutionDay11 : BaseSolution() {
 

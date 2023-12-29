@@ -1,12 +1,14 @@
-package solution
+package year2023
 
 import kotlin.system.measureTimeMillis
 
 abstract class BaseSolution {
 
-    protected fun input() = BaseSolution::class.java.getResource("/inputDay$day")!!.readText()
+    protected fun input() = BaseSolution::class.java.getResource("/year$year/inputDay$day")!!.readText()
 
     abstract val day: Int
+
+    open val year: Int = 2023
 
     override fun toString() = "DAY $day: ${measureTask(::task1)}, ${measureTask(::task2)}"
 

@@ -1,7 +1,9 @@
+package year2023
+
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import solution.SolutionDay24.*
+import year2023.SolutionDay24.*
 import kotlin.test.assertEquals
 
 class Solution24Test {

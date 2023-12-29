@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import java.lang.Exception
+
+fun main() {
+    println("${SolutionDay19()}")
+}
 
 class SolutionDay19 : BaseSolution() {
 

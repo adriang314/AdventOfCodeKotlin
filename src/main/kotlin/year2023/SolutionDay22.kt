@@ -1,8 +1,12 @@
-package solution
+package year2023
 
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+
+fun main() {
+    println("${SolutionDay22()}")
+}
 
 class SolutionDay22 : BaseSolution() {
 

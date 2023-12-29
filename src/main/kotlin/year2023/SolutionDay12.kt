@@ -1,4 +1,8 @@
-package solution
+package year2023
+
+fun main() {
+    println("${SolutionDay12()}")
+}
 
 class SolutionDay12 : BaseSolution() {
 

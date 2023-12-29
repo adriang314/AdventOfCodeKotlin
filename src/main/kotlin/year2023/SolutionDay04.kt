@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import kotlin.math.pow
+
+fun main() {
+    println("${SolutionDay04()}")
+}
 
 class SolutionDay04 : BaseSolution() {
 

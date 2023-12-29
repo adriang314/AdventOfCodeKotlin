@@ -1,8 +1,12 @@
-package solution
+package year2023
 
 import java.awt.Point
 import java.awt.Polygon
 import java.util.LinkedList
+
+fun main() {
+    println("${SolutionDay18()}")
+}
 
 class SolutionDay18 : BaseSolution() {
 

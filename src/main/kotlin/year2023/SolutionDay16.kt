@@ -1,7 +1,11 @@
-package solution
+package year2023
 
-import solution.SolutionDay16.TileType.*
-import solution.SolutionDay16.Direction.*
+import year2023.SolutionDay16.TileType.*
+import year2023.SolutionDay16.Direction.*
+
+fun main() {
+    println("${SolutionDay16()}")
+}
 
 class SolutionDay16 : BaseSolution() {
 

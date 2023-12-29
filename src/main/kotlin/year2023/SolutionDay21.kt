@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import java.util.LinkedList
+
+fun main() {
+    println("${SolutionDay21()}")
+}
 
 class SolutionDay21 : BaseSolution() {
 

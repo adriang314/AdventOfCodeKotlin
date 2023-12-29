@@ -1,5 +1,6 @@
+package year2023
+
 import org.junit.jupiter.api.Test
-import solution.Hashing
 import kotlin.test.assertEquals
 
 class Solution15Test {

@@ -1,8 +1,12 @@
-package solution
+package year2023
 
 import java.awt.Point
 import java.awt.Polygon
 import java.util.*
+
+fun main() {
+    println("${SolutionDay10()}")
+}
 
 /**
  * Increase stack trace with -Xss40m

@@ -1,6 +1,10 @@
-package solution
+package year2023
 
 import java.util.*
+
+fun main() {
+    println("${SolutionDay17()}")
+}
 
 class SolutionDay17 : BaseSolution() {
 

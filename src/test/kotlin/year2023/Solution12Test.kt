@@ -1,5 +1,7 @@
+package year2023
+
 import org.junit.jupiter.api.Test
-import solution.SolutionDay12.Line
+import year2023.SolutionDay12.Line
 import kotlin.test.assertEquals
 
 class Solution12Test {
