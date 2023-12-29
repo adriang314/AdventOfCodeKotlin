@@ -1,5 +1,6 @@
 package year2023
 
+import common.BaseSolution
 import org.jgrapht.alg.StoerWagnerMinimumCut
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleWeightedGraph

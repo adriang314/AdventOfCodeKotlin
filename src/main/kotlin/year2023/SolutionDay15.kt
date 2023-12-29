@@ -1,5 +1,7 @@
 package year2023
 
+import common.BaseSolution
+
 private val hashing = Hashing()
 
 fun main() {

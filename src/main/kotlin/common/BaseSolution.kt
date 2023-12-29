@@ -1,4 +1,4 @@
-package year2023
+package common
 
 import kotlin.system.measureTimeMillis
 

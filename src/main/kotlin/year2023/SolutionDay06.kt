@@ -1,5 +1,7 @@
 package year2023
 
+import common.BaseSolution
+
 fun main() {
     println("${SolutionDay06()}")
 }

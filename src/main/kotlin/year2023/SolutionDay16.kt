@@ -1,5 +1,6 @@
 package year2023
 
+import common.BaseSolution
 import year2023.SolutionDay16.TileType.*
 import year2023.SolutionDay16.Direction.*
 

@@ -1,5 +1,6 @@
 package year2023
 
+import common.BaseSolution
 import kotlin.math.max
 import kotlin.math.min
 

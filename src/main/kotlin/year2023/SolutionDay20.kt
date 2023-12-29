@@ -1,5 +1,7 @@
 package year2023
 
+import common.BaseSolution
+
 private var iteration = 0L
 private var iterationBh = 0L
 private var iterationSh = 0L

@@ -1,5 +1,6 @@
 package year2023
 
+import common.BaseSolution
 import java.util.LinkedList
 
 fun main() {
