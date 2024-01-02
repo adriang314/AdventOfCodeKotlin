@@ -1,11 +1,8 @@
 package year2023
 
 import common.BaseSolution
-import java.lang.Exception
 
-fun main() {
-    println("${SolutionDay14()}")
-}
+fun main() = println(SolutionDay14().result())
 
 class SolutionDay14 : BaseSolution() {
 
@@ -44,7 +41,7 @@ class SolutionDay14 : BaseSolution() {
         val rawLines = input().split("\r\n", "\n")
         val lines = rawLines.mapIndexed { index, s -> Line(s, index, rawLines.size) }
         val rocks = lines.map { it.rocks }.flatten()
-        val rowLength = lines.first.line.length
+        val rowLength = lines.first().line.length
         val rowNumber = lines.size
         board = Board(Rocks(rocks), rowLength, rowNumber)
     }

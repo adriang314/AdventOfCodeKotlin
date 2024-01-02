@@ -2,9 +2,7 @@ package year2023
 
 import common.BaseSolution
 
-fun main() {
-    println("${SolutionDay02()}")
-}
+fun main() = println(SolutionDay02().result())
 
 class SolutionDay02 : BaseSolution() {
 

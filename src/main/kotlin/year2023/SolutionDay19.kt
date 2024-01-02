@@ -1,11 +1,8 @@
 package year2023
 
 import common.BaseSolution
-import java.lang.Exception
 
-fun main() {
-    println("${SolutionDay19()}")
-}
+fun main() = println(SolutionDay19().result())
 
 class SolutionDay19 : BaseSolution() {
 
@@ -85,8 +82,8 @@ class SolutionDay19 : BaseSolution() {
 
         init {
             val split = text.split(":")
-            name = split.last
-            formula = if (split.size > 1) split.first else null
+            name = split.last()
+            formula = if (split.size > 1) split.first() else null
             targetPart = formula?.first()
             operator = formula?.getOrNull(1)
             targetPartValue = if (formula != null) regex.find(formula)!!.groupValues[1].toInt() else null
@@ -147,7 +144,7 @@ class SolutionDay19 : BaseSolution() {
                 }
 
                 if (currentNode.workflowNode.childWorkflows.isEmpty())
-                    finalPaths.add(currPath.last)
+                    finalPaths.add(currPath.last())
             }
 
             return finalPaths

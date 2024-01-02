@@ -3,9 +3,7 @@ package year2023
 import common.BaseSolution
 import java.util.*
 
-fun main() {
-    println("${SolutionDay17()}")
-}
+fun main() = println(SolutionDay17().result())
 
 class SolutionDay17 : BaseSolution() {
 
@@ -14,14 +12,14 @@ class SolutionDay17 : BaseSolution() {
     override fun task1(): String {
         with(Graph(edges, Task.One)) {
             dijkstra(nodes[0][0].name)
-            return this.graph[nodes.last.last.name]!!.dist.values.distinct().sorted().toString()
+            return this.graph[nodes.last().last().name]!!.dist.values.distinct().sorted().toString()
         }
     }
 
     override fun task2(): String {
         with(Graph(edges, Task.Two)) {
             dijkstra(nodes[0][0].name)
-            return this.graph[nodes.last.last.name]!!.dist.values.distinct().sorted().toString()
+            return this.graph[nodes.last().last().name]!!.dist.values.distinct().sorted().toString()
         }
     }
 

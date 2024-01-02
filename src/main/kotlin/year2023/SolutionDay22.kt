@@ -5,9 +5,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-fun main() {
-    println("${SolutionDay22()}")
-}
+fun main() = println(SolutionDay22().result())
 
 class SolutionDay22 : BaseSolution() {
 
@@ -48,7 +46,7 @@ class SolutionDay22 : BaseSolution() {
                 return
             }
 
-            val maxZ = potentiallyBlockingBricks.keys.sorted().last
+            val maxZ = potentiallyBlockingBricks.keys.maxOf { it }
             val allBlockingBricks = potentiallyBlockingBricks[maxZ]!!
             brick.supportedBy.addAll(allBlockingBricks)
             val newStackedBrick = brick.fallTo(maxZ + 1)

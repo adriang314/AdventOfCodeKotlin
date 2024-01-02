@@ -1,12 +1,10 @@
 package year2023
 
 import common.BaseSolution
-import year2023.SolutionDay16.TileType.*
 import year2023.SolutionDay16.Direction.*
+import year2023.SolutionDay16.TileType.*
 
-fun main() {
-    println("${SolutionDay16()}")
-}
+fun main() = println(SolutionDay16().result())
 
 class SolutionDay16 : BaseSolution() {
 
@@ -93,9 +91,9 @@ class SolutionDay16 : BaseSolution() {
         fun topLeftTile() = listOf(Pair(tiles[0][0], DOWN))
 
         fun edgeTiles(): List<Pair<Tile, Direction>> {
-            val topEdge = tiles.first.filter { it.type == MIRROR_SPLIT_TD || it.type == EMPTY_SPACE }
+            val topEdge = tiles.first().filter { it.type == MIRROR_SPLIT_TD || it.type == EMPTY_SPACE }
                 .map { Pair(it, DOWN) }
-            val bottomEdge = tiles.last.filter { it.type == MIRROR_SPLIT_TD || it.type == EMPTY_SPACE }
+            val bottomEdge = tiles.last().filter { it.type == MIRROR_SPLIT_TD || it.type == EMPTY_SPACE }
                 .map { Pair(it, UP) }
             val leftEdge = tiles.map { row -> row.filter { it.colIdx == 0 } }.flatten()
                 .filter { it.type == MIRROR_SPLIT_LR || it.type == EMPTY_SPACE }.map { Pair(it, RIGHT) }

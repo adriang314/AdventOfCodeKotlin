@@ -5,9 +5,7 @@ import java.awt.Point
 import java.awt.Polygon
 import java.util.*
 
-fun main() {
-    println("${SolutionDay10()}")
-}
+fun main() = println(SolutionDay10().result())
 
 /**
  * Increase stack trace with -Xss40m

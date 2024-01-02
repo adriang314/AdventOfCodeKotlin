@@ -7,7 +7,7 @@ import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleDirectedGraph
 
-fun main() = println("${SolutionDay12()}")
+fun main() = println(SolutionDay12().result())
 
 class SolutionDay12 : BaseSolution() {
     override val day = 12

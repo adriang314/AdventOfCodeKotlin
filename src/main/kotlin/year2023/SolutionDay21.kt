@@ -1,11 +1,9 @@
 package year2023
 
 import common.BaseSolution
-import java.util.LinkedList
+import java.util.*
 
-fun main() {
-    println("${SolutionDay21()}")
-}
+fun main() = println(SolutionDay21().result())
 
 class SolutionDay21 : BaseSolution() {
 
@@ -51,7 +49,7 @@ class SolutionDay21 : BaseSolution() {
     }
 
     private var rawLines: List<String> = input().split("\r\n", "\n")
-    private var colSize: Int = rawLines.first.length
+    private var colSize: Int = rawLines.first().length
     private var rowSize: Int = rawLines.size
 
     @Suppress("SameParameterValue")
@@ -134,7 +132,7 @@ class SolutionDay21 : BaseSolution() {
     }
 
     class Points(tiles: List<List<Tile>>, private val originalRowSize: Int, private val originalColSize: Int) {
-        private val length = tiles.first.size
+        private val length = tiles.first().size
         private val height = tiles.size
         private val allPoints = tiles.flatten()
         var startTile: Tile = Tile(-1, -1, TileType.Start)

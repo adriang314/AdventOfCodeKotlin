@@ -5,9 +5,7 @@ import org.jgrapht.alg.StoerWagnerMinimumCut
 import org.jgrapht.graph.DefaultWeightedEdge
 import org.jgrapht.graph.SimpleWeightedGraph
 
-fun main() {
-    println("${SolutionDay25()}")
-}
+fun main() = println(SolutionDay25().result())
 
 class SolutionDay25 : BaseSolution() {
 

@@ -4,7 +4,7 @@ import common.BaseSolution
 import kotlin.math.max
 import kotlin.math.min
 
-fun main() = println("${SolutionDay14()}")
+fun main() = println(SolutionDay14().result())
 
 class SolutionDay14 : BaseSolution() {
     override val day = 14

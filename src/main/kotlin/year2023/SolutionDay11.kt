@@ -3,9 +3,7 @@ package year2023
 import common.BaseSolution
 import kotlin.math.abs
 
-fun main() {
-    println("${SolutionDay11()}")
-}
+fun main() = println(SolutionDay11().result())
 
 class SolutionDay11 : BaseSolution() {
 
@@ -77,7 +75,7 @@ class SolutionDay11 : BaseSolution() {
             // find locations in milky ways for horizontal expansion
             val galaxyLocations = milkyWays.map { it.galaxyLocations }.flatten().distinct().sorted()
             val milkyWayExpansionLocations = mutableListOf<Long>()
-            (0L..<milkyWays.first.size).forEach { location ->
+            (0L..<milkyWays.first().size).forEach { location ->
                 if (!galaxyLocations.contains(location))
                     milkyWayExpansionLocations.add(location)
             }

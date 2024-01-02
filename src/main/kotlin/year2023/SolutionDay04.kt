@@ -3,9 +3,7 @@ package year2023
 import common.BaseSolution
 import kotlin.math.pow
 
-fun main() {
-    println("${SolutionDay04()}")
-}
+fun main() = println(SolutionDay04().result())
 
 class SolutionDay04 : BaseSolution() {
 

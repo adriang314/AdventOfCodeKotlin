@@ -2,9 +2,7 @@ package year2023
 
 import common.BaseSolution
 
-fun main() {
-    println("${SolutionDay06()}")
-}
+fun main() = println(SolutionDay06().result())
 
 class SolutionDay06 : BaseSolution() {
 
@@ -32,10 +30,10 @@ class SolutionDay06 : BaseSolution() {
             val timesTask1 = numbers(numberRegex, lines[0])
             val recordsTask1 = numbers(numberRegex, lines[1])
             val racesTask1 = timesTask1.mapIndexed { index, i -> Race(i, recordsTask1[index]) }.toList()
-            resultTask1 = racesTask1.map { countRaceWithNewRecord(it) }.scan(1L) { acc, l -> acc * l }.last
+            resultTask1 = racesTask1.map { countRaceWithNewRecord(it) }.scan(1L) { acc, l -> acc * l }.last()
 
-            val timeTask2 = numbers(numberRegex, lines[0]).scan("") { acc, l -> acc + l.toString() }.last.toLong()
-            val recordTask2 = numbers(numberRegex, lines[1]).scan("") { acc, l -> acc + l.toString() }.last.toLong()
+            val timeTask2 = numbers(numberRegex, lines[0]).scan("") { acc, l -> acc + l.toString() }.last().toLong()
+            val recordTask2 = numbers(numberRegex, lines[1]).scan("") { acc, l -> acc + l.toString() }.last().toLong()
             val raceTask2 = Race(timeTask2, recordTask2)
             resultTask2 = countRaceWithNewRecord(raceTask2)
         }

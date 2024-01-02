@@ -10,7 +10,7 @@ abstract class BaseSolution {
 
     open val year: Int = 2023
 
-    override fun toString() = "DAY $day: ${measureTask(::task1)}, ${measureTask(::task2)}"
+    fun result() = "DAY $day: ${measureTask(::task1)}, ${measureTask(::task2)}"
 
     abstract fun task1(): String
 

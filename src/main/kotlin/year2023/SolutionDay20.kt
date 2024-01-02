@@ -8,9 +8,7 @@ private var iterationSh = 0L
 private var iterationJf = 0L
 private var iterationMz = 0L
 
-fun main() {
-    println("${SolutionDay20()}")
-}
+fun main() = println(SolutionDay20().result())
 
 class SolutionDay20 : BaseSolution() {
 
@@ -20,7 +18,7 @@ class SolutionDay20 : BaseSolution() {
         val rawLines = input().split("\r\n", "\n")
         val input = Input(rawLines)
         val modules = input.modules
-        val broadcast = modules.filterIsInstance<Broadcast>().first
+        val broadcast = modules.filterIsInstance<Broadcast>().first()
         for (i in 0..<1000)
             broadcast.pushButton()
         val highPulses = modules.sumOf { it.highPulseSent }
@@ -33,7 +31,7 @@ class SolutionDay20 : BaseSolution() {
         val rawLines = input().split("\r\n", "\n")
         val input = Input(rawLines)
         val modules = input.modules
-        val broadcast = modules.filterIsInstance<Broadcast>().first
+        val broadcast = modules.filterIsInstance<Broadcast>().first()
         while (iterationBh == 0L || iterationJf == 0L || iterationSh == 0L || iterationMz == 0L) {
             iteration++
             broadcast.pushButton()

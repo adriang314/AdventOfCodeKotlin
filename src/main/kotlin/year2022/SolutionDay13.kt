@@ -4,7 +4,7 @@ import common.BaseSolution
 import kotlin.math.min
 import kotlin.math.sign
 
-fun main() = println("${SolutionDay13()}")
+fun main() = println(SolutionDay13().result())
 
 private const val grpStart = '['
 private const val grpEnd = ']'

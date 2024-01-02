@@ -2,9 +2,7 @@ package year2022
 
 import common.BaseSolution
 
-fun main() {
-    println("${SolutionDay03()}")
-}
+fun main() = println(SolutionDay03().result())
 
 private val lower = 'a'.code..'z'.code
 private val upper = 'A'.code..'Z'.code

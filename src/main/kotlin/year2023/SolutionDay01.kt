@@ -12,9 +12,7 @@ private val mappingNames = mapOf(
     "six" to 6, "seven" to 7, "eight" to 8, "nine" to 9
 )
 
-fun main() {
-    println("${SolutionDay01()}")
-}
+fun main() = println(SolutionDay01().result())
 
 class SolutionDay01 : BaseSolution() {
 

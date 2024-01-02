@@ -4,9 +4,7 @@ import common.BaseSolution
 import kotlin.math.max
 import kotlin.math.min
 
-fun main() {
-    println("${SolutionDay05()}")
-}
+fun main() = println(SolutionDay05().result())
 
 class SolutionDay05 : BaseSolution() {
 
@@ -100,7 +98,7 @@ class SolutionDay05 : BaseSolution() {
                         noShiftMappings.add(SingleMapping(start..<end, 0))
                 }
 
-                val lastMapping = sortedMappings.last.range.last
+                val lastMapping = sortedMappings.last().range.last
                 if (lastMapping < Long.MAX_VALUE)
                     noShiftMappings.add(SingleMapping(lastMapping + 1..Long.MAX_VALUE, 0L))
 

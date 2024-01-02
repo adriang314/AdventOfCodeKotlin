@@ -4,9 +4,7 @@ import common.BaseSolution
 
 private val hashing = Hashing()
 
-fun main() {
-    println("${SolutionDay15()}")
-}
+fun main() = println(SolutionDay15().result())
 
 class SolutionDay15 : BaseSolution() {
 

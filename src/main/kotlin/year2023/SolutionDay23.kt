@@ -1,11 +1,8 @@
 package year2023
 
 import common.BaseSolution
-import kotlin.collections.ArrayDeque
 
-fun main() {
-    println("${SolutionDay23()}")
-}
+fun main() = println(SolutionDay23().result())
 
 class SolutionDay23 : BaseSolution() {
 
@@ -42,9 +39,9 @@ class SolutionDay23 : BaseSolution() {
 
     class Tiles(tiles: List<List<Tile>>, slopesAsPaths: Boolean) {
         private val height = tiles.size
-        private val length = tiles.first.size
+        private val length = tiles.first().size
         private val start = tiles[0][1]
-        private val end = tiles.last[length - 2]
+        private val end = tiles.last()[length - 2]
 
         init {
             for (i in 0..<length) {
@@ -73,7 +70,7 @@ class SolutionDay23 : BaseSolution() {
 
             val tilesNoForest = tiles.flatten().filter { it.type != TileType.Forest }
             val stack = ArrayDeque<Iteration>()
-            stack.add(Iteration(tilesNoForest.first, tilesNoForest.first, listOf(tilesNoForest.first)))
+            stack.add(Iteration(tilesNoForest.first(), tilesNoForest.first(), listOf(tilesNoForest.first())))
 
             while (stack.isNotEmpty()) {
                 val currentIteration = stack.removeFirst()

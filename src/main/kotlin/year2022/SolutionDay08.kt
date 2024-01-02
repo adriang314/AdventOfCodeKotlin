@@ -4,7 +4,7 @@ import common.BaseSolution
 import common.Point
 import common.PointMap
 
-fun main() = println("${SolutionDay08()}")
+fun main() = println(SolutionDay08().result())
 
 private typealias PointWithVisibility = Point<SolutionDay08.Visibility, Int>
 

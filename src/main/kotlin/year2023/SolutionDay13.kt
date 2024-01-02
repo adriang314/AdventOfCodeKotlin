@@ -1,12 +1,9 @@
 package year2023
 
 import common.BaseSolution
-import java.lang.RuntimeException
 import kotlin.math.min
 
-fun main() {
-    println("${SolutionDay13()}")
-}
+fun main() = println(SolutionDay13().result())
 
 class SolutionDay13 : BaseSolution() {
 
@@ -47,7 +44,7 @@ class SolutionDay13 : BaseSolution() {
         private var horizontalReflection: Int?
         private var verticalReflection: Int?
         private var height: Int = lines.size
-        private val length: Int = lines.first.length
+        private val length: Int = lines.first().length
         val value: Int
 
         init {

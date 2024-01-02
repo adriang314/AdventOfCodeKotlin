@@ -2,9 +2,7 @@ package year2022
 
 import common.BaseSolution
 
-fun main() {
-    println("${SolutionDay04()}")
-}
+fun main() = println(SolutionDay04().result())
 
 class SolutionDay04 : BaseSolution() {
     override val day = 4

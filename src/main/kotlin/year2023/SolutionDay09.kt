@@ -2,9 +2,7 @@ package year2023
 
 import common.BaseSolution
 
-fun main() {
-    println("${SolutionDay09()}")
-}
+fun main() = println(SolutionDay09().result())
 
 class SolutionDay09 : BaseSolution() {
     override val day = 9
@@ -37,16 +35,16 @@ class SolutionDay09 : BaseSolution() {
             buildAllHistories(firstHistory)
             updateHistories(appendHistory)
 
-            result = if (appendHistory) firstHistory.last else firstHistory.first
+            result = if (appendHistory) firstHistory.last() else firstHistory.first()
         }
 
         private fun updateHistories(appendHistory: Boolean) {
             allHistories.reversed().forEach { pair ->
-                if (pair.first == allHistories.last.first)
+                if (pair.first == allHistories.last().first)
                     pair.first.add(0L)
 
                 if (appendHistory) {
-                    val toAdd = pair.first.last + (pair.second.lastOrNull() ?: 0L)
+                    val toAdd = pair.first.last() + (pair.second.lastOrNull() ?: 0L)
                     pair.second.add(toAdd)
                 } else {
                     val toAdd = (pair.second.firstOrNull() ?: 0L) - pair.first.first()
