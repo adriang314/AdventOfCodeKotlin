@@ -32,26 +32,44 @@ class SolutionDay17 : BaseSolution() {
             chamber.pushRock(rock)
         }
 
-        // cycle found manually by printing height changes
         val rocksToCount = 1_000_000_000_000L
-        val cycleSize = 1705
-        val initSize = 1705
+        val cycleSize = findCycle(chamber)
 
-        val initRange = 0..<initSize
-        val firstCycleRange = initSize..<(initSize + cycleSize)
+        val initRange = 0..<cycleSize
+        val firstCycleRange = cycleSize..<(cycleSize + cycleSize)
 
         val initValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in initRange }.sum()
         val cycleValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in firstCycleRange }.sum()
 
-        val cyclesToCount = (rocksToCount - initSize) / cycleSize
+        val cyclesToCount = (rocksToCount - cycleSize) / cycleSize
         val cyclesValue = cyclesToCount * cycleValue
 
-        val reminder = rocksToCount - (cyclesToCount * cycleSize) - initSize
-        val reminderRange = initSize..<(initSize + reminder)
+        val reminder = rocksToCount - (cyclesToCount * cycleSize) - cycleSize
+        val reminderRange = cycleSize..<(cycleSize + reminder)
         val reminderValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in reminderRange }.sum()
         val result = initValue + cyclesValue + reminderValue
 
         return result.toString()
+    }
+
+    private fun findCycle(chamber: Chamber): Int {
+        val patternStartIdx = 2000
+        val patternEndIdx = 3000
+        val patternSize = patternEndIdx - patternStartIdx
+        val patternToSearch = chamber.heightChanges.slice(patternStartIdx..patternEndIdx)
+        var nextOneIdx = patternEndIdx + 1
+
+        while (true) {
+            for (i in 0..patternSize) {
+                if (patternToSearch[i] != chamber.heightChanges[nextOneIdx + i])
+                    break
+
+                if (i == patternSize)
+                    return nextOneIdx - patternStartIdx
+            }
+
+            nextOneIdx++
+        }
     }
 
     private val windDirections = input().map { WindDirection.from(it) }
