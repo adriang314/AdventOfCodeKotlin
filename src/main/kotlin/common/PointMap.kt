@@ -6,6 +6,8 @@ open class Point<T, U>(val x: Int, val y: Int, val value: U, var state: T) {
     var up: Point<T, U>? = null
     var down: Point<T, U>? = null
 
+    fun neighbours() = listOfNotNull(left, right, up, down)
+
     override fun toString() = "[$x,$y] $value $state"
 }
 
