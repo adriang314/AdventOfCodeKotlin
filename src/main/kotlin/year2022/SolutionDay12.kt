@@ -53,7 +53,7 @@ class SolutionDay12 : BaseSolution() {
         }
     }
 
-    private fun Point<Paths, Square>.id(): String = "[${this.x},${this.y}]"
+    private fun Point<Paths, Square>.id(): String = "[${this.rowIdx},${this.colIdx}]"
 
     data class Square(val name: Char) {
         val height: Int = when (name) {

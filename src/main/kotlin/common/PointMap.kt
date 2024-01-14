@@ -1,6 +1,7 @@
 package common
 
-open class Point<T, U>(val x: Int, val y: Int, val value: U, var state: T) {
+open class Point<T, U>(val rowIdx: Int, val colIdx: Int, val value: U, var state: T) {
+    val id = "[$rowIdx,$colIdx]"
     var left: Point<T, U>? = null
     var right: Point<T, U>? = null
     var up: Point<T, U>? = null
@@ -8,7 +9,7 @@ open class Point<T, U>(val x: Int, val y: Int, val value: U, var state: T) {
 
     fun neighbours() = listOfNotNull(left, right, up, down)
 
-    override fun toString() = "[$x,$y] $value $state"
+    override fun toString() = "[$rowIdx,$colIdx] $value $state"
 }
 
 open class PointMap<T, U>(input: String, valueMapper: (Char) -> U, defaultState: () -> T) {
