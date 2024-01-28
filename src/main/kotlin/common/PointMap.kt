@@ -13,18 +13,14 @@ open class Point<T, U>(val rowIdx: Int, val colIdx: Int, val value: U, var state
 }
 
 open class PointMap<T, U>(input: String, valueMapper: (Char) -> U, defaultState: () -> T) {
-    val points: List<List<Point<T, U>>>
-    val height: Int
-    val length: Int
+    val points: List<List<Point<T, U>>> = input.split("\r\n")
+        .mapIndexed { x, line ->
+            line.toList().mapIndexed { y, c -> Point(x, y, valueMapper(c), defaultState()) }
+        }
+    val height: Int = points.size
+    val length: Int = points.first().size
 
     init {
-        points = input.split("\r\n")
-            .mapIndexed { x, line ->
-                line.toList().mapIndexed { y, c -> Point(x, y, valueMapper(c), defaultState()) }
-            }
-        height = points.size
-        length = points.first().size
-
         for (i in 0..<height) {
             for (j in 0..<length) {
                 val current = points[i][j]
