@@ -56,19 +56,19 @@ class SolutionDay22 : BaseSolution() {
             val cubes = mutableListOf<Cube>()
 
             if (x.first < other.x.first)
-                cubes.add(Cube(x.first..<other.x.first, y, z))
+                cubes.add(Cube(x.first until other.x.first, y, z))
             if (other.x.last < x.last)
                 cubes.add(Cube(other.x.last + 1..x.last, y, z))
 
             val xInner = this.x.intersection(other.x)
             if (y.first < other.y.first)
-                cubes.add(Cube(xInner, y.first..<other.y.first, z))
+                cubes.add(Cube(xInner, y.first until other.y.first, z))
             if (other.y.last < y.last)
                 cubes.add(Cube(xInner, other.y.last + 1..y.last, z))
 
             val yInner = this.y.intersection(other.y)
             if (z.first < other.z.first)
-                cubes.add(Cube(xInner, yInner, z.first..<other.z.first))
+                cubes.add(Cube(xInner, yInner, z.first until other.z.first))
             if (other.z.last < z.last)
                 cubes.add(Cube(xInner, yInner, other.z.last + 1..z.last))
 

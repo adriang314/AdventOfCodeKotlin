@@ -46,7 +46,7 @@ class SolutionDay24 : BaseSolution() {
             else
                 Operation(lineParts[0], "w" + ++i, "")
         }
-        operationGroups = (0..<14).map { idx -> OperationGroup(operations.drop(idx * 18).take(18)) }
+        operationGroups = (0 until 14).map { idx -> OperationGroup(operations.drop(idx * 18).take(18)) }
     }
 
     data class OperationGroup(val operations: List<Operation>) {

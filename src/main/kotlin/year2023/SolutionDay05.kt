@@ -46,7 +46,7 @@ class SolutionDay05 : BaseSolution() {
 
             val seeds = numbers(numberRegex, inputParts[0])
             seedRanges = if (extendedSeeds)
-                List(seeds.filterIndexed { i, _ -> i % 2 == 0 }.size) { i -> seeds[2 * i]..<seeds[2 * i] + seeds[2 * i + 1] }
+                List(seeds.filterIndexed { i, _ -> i % 2 == 0 }.size) { i -> seeds[2 * i] until seeds[2 * i] + seeds[2 * i + 1] }
             else
                 seeds.map { it..it }.toList()
             seedsToSoilMap = buildMap(inputParts[1])
@@ -78,7 +78,7 @@ class SolutionDay05 : BaseSolution() {
                         val sourceIdx = it.groupValues[2].toLong()
                         val length = it.groupValues[3].toLong()
                         SingleMapping(
-                            sourceIdx..<sourceIdx + length,
+                            sourceIdx until sourceIdx + length,
                             destinationIdx - sourceIdx
                         )
                     }
@@ -95,7 +95,7 @@ class SolutionDay05 : BaseSolution() {
                     val start = if (i > 0) (sortedMappings.getOrNull(i - 1)!!.range.last + 1) else 0
                     val end = sortedMappings[i].range.first - 1
                     if (start <= end)
-                        noShiftMappings.add(SingleMapping(start..<end, 0))
+                        noShiftMappings.add(SingleMapping(start until end, 0))
                 }
 
                 val lastMapping = sortedMappings.last().range.last

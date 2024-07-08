@@ -75,7 +75,7 @@ class SolutionDay11 : BaseSolution() {
             // find locations in milky ways for horizontal expansion
             val galaxyLocations = milkyWays.map { it.galaxyLocations }.flatten().distinct().sorted()
             val milkyWayExpansionLocations = mutableListOf<Long>()
-            (0L..<milkyWays.first().size).forEach { location ->
+            (0L until milkyWays.first().size).forEach { location ->
                 if (!galaxyLocations.contains(location))
                     milkyWayExpansionLocations.add(location)
             }

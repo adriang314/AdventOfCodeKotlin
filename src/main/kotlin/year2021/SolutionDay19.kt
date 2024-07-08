@@ -52,7 +52,7 @@ class SolutionDay19 : BaseSolution() {
     }
 
     private fun findScannerLocations() {
-        val rotations = Point.Rotation.entries
+        val rotations = Point.Rotation.values()
         while (scanners.any { it.locationVsS0 == null }) {
             var currScanner: Scanner? = null
             var sharedPoints: List<Pair<Scanner, Set<Point>>> = emptyList()
@@ -212,7 +212,7 @@ class SolutionDay19 : BaseSolution() {
 
         companion object {
             fun with(xType: OrientationType, yType: OrientationType, zType: OrientationType) =
-                Orientation.entries.first { it.x == xType && it.y == yType && it.z == zType }
+                Orientation.values().first { it.x == xType && it.y == yType && it.z == zType }
         }
     }
 

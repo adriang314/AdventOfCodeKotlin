@@ -16,7 +16,7 @@ class SolutionDay24 : BaseSolution() {
 
         var crossed = 0
         for (i in hailStones.indices) {
-            for (j in i + 1..<hailStones.size) {
+            for (j in i + 1 until hailStones.size) {
                 val h1 = hailStones[i]
                 val h2 = hailStones[j]
                 val cross = Cross(h1, h2)

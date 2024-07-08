@@ -145,7 +145,7 @@ class SolutionDay24 : BaseSolution() {
         NorthEast("ne");
 
         companion object {
-            fun from(text: String) = entries.firstOrNull { it.code == text }
+            fun from(text: String) = values().firstOrNull { it.code == text }
         }
     }
 }

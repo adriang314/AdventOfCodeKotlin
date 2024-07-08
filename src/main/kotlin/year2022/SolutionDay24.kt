@@ -151,7 +151,7 @@ class SolutionDay24 : BaseSolution() {
         fun positionIdx() = positionIndex(rowIdx, colIdx)
 
         fun availableMoves(blizzards: Blizzards) =
-            Direction.entries.filter { canMove(it, blizzards) }
+            Direction.values().filter { canMove(it, blizzards) }
 
         private fun canMove(direction: Direction, blizzards: Blizzards): Boolean {
             return when (direction) {

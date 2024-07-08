@@ -94,6 +94,7 @@ class SolutionDay20 : BaseSolution() {
 
         private fun Int.oppositeIdx(): Int = (this + 2) % 4
 
+        @Suppress("USELESS_CAST")
         private fun assembleTiles(): Picture {
             val picture = Array(size) { Array(size) { null as Tile? } }
             var left = tiles.firstOrNull { it.left == null && it.top == null }
@@ -142,8 +143,8 @@ class SolutionDay20 : BaseSolution() {
         }
 
         private fun countSeaMonsters(): Int =
-            (0..<parts.size - 19).map { rowIdx ->
-                (1..<parts.size - 1).map { colIdx -> isSeaMonster(rowIdx, colIdx) }
+            (0 until parts.size - 19).map { rowIdx ->
+                (1 until parts.size - 1).map { colIdx -> isSeaMonster(rowIdx, colIdx) }
             }.flatten().count { it }
 
         private fun isSeaMonster(x: Int, y: Int) =

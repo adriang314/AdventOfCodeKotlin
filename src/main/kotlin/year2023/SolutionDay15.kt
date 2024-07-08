@@ -23,7 +23,7 @@ class SolutionDay15 : BaseSolution() {
     }
 
     class Boxes {
-        private val boxes = mutableMapOf<Long, Box>().apply { (0..<256L).forEach { this[it] = Box(it) } }.toMap()
+        private val boxes = mutableMapOf<Long, Box>().apply { (0 until 256L).forEach { this[it] = Box(it) } }.toMap()
 
         fun executeOperation(p: String) {
             val isRemove = p.endsWith('-')

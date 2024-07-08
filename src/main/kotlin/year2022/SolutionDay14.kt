@@ -33,7 +33,7 @@ class SolutionDay14 : BaseSolution() {
         val lines = input().split("\r\n")
         rocks = lines.map { line ->
             val points = line.split(" -> ").map { Point.from(it) }
-            val rocks = (0..<points.size - 1).map { Rocks(points[it], points[it + 1]) }
+            val rocks = (0 until points.size - 1).map { Rocks(points[it], points[it + 1]) }
             rocks
         }.flatten()
 

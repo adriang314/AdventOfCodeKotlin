@@ -50,8 +50,8 @@ class SolutionDay03 : BaseSolution() {
     val length: Int = points.first().size
 
     init {
-        for (i in 0..<height) {
-            for (j in 0..<length) {
+        for (i in 0 until height) {
+            for (j in 0 until length) {
                 val current = points[i][j]
                 val up = points.getOrNull(i - 1)?.getOrNull(j)
                 val down = points.getOrNull(i + 1)?.getOrNull(j)

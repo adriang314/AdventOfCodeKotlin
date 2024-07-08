@@ -96,7 +96,7 @@ class SolutionDay16 : BaseSolution() {
         Equal(7);
 
         companion object {
-            fun from(id: Int) = entries.first { it.typeId == id }
+            fun from(id: Int) = values().first { it.typeId == id }
         }
     }
 

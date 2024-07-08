@@ -44,7 +44,7 @@ class SolutionDay09 : BaseSolution() {
     }
 
     private fun isSumOfPreamble(number: Number): Boolean {
-        val preambleRange = (number.idx - preamble)..<number.idx
+        val preambleRange = (number.idx - preamble) until number.idx
         val preamble = preambleRange.map { numbers[it]!!.value }.toSet()
         return preambleRange.any { idx ->
             val firstNumber = numbers[idx]!!

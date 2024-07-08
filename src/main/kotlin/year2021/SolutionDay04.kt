@@ -78,7 +78,7 @@ class SolutionDay04 : BaseSolution() {
 
     data class Board(val rows: List<List<Number>>) {
         private val length = rows.first().size
-        private val columns = (0..<length).map { index -> rows.map { it[index] } }
+        private val columns = (0 until length).map { index -> rows.map { it[index] } }
 
         fun mark(number: Int) = rows.flatten().filter { it.value == number }.forEach { it.marked = true }
 

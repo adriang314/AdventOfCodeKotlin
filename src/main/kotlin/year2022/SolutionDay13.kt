@@ -87,7 +87,7 @@ class SolutionDay13 : BaseSolution() {
     data class PacketList(val values: List<PacketItem>) : PacketItem, Comparable<PacketList> {
         override fun compareTo(other: PacketList): Int {
             val minSize: Int = min(values.size, other.values.size)
-            for (i in 0..<minSize) {
+            for (i in 0 until minSize) {
                 val leftValue = values[i]
                 val rightValue = other.values[i]
                 if (leftValue is PacketValueItem && rightValue is PacketValueItem) {

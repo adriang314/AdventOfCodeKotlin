@@ -109,7 +109,7 @@ class SolutionDay19 : BaseSolution() {
         private fun applyFormulaOnPart(value: Int, part: Part, rng: IntRange, newPart: (IntRange) -> Part) =
             if (value in rng) {
                 if (operator!! == '>') Pair(newPart(value + 1..rng.last), newPart(rng.first..value))
-                else Pair(newPart(rng.first..<value), newPart(value..rng.last))
+                else Pair(newPart(rng.first until value), newPart(value..rng.last))
             } else {
                 if (operator!! == '>')
                     if (value > rng.last) Pair(Part.EMPTY, part) else Pair(part, Part.EMPTY)

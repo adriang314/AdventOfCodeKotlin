@@ -110,7 +110,7 @@ class SolutionDay12 : BaseSolution() {
         }
 
         companion object {
-            fun from(degree: Int) = Facing.entries.first { it.degree == (degree + 360) % 360 }
+            fun from(degree: Int) = Facing.values().first { it.degree == (degree + 360) % 360 }
         }
     }
 }

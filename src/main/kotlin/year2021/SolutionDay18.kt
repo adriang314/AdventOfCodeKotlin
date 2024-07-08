@@ -12,7 +12,7 @@ class SolutionDay18 : BaseSolution() {
     override fun task1(): String {
         val numbers = input().split("\r\n").map { SnailNumber.fromText(it) }
         var result = numbers.first()
-        for (i in 1..<numbers.size) {
+        for (i in 1 until numbers.size) {
             result = result.addNumber(numbers[i])
             result.reduce()
         }

@@ -71,8 +71,8 @@ class SolutionDay21 : BaseSolution() {
 
         init {
             if (number == null) {
-                leftName = formula.substring(0..<4)
-                rightName = formula.substring(7..<11)
+                leftName = formula.substring(0 until 4)
+                rightName = formula.substring(7 until 11)
                 operation = formula[5]
             } else {
                 leftName = null

@@ -58,7 +58,7 @@ class SolutionDay09 : BaseSolution() {
                 return history
 
             val childHistory = ArrayList<Long>(history.size)
-            for (i in 0..<history.size - 1) {
+            for (i in 0 until history.size - 1) {
                 childHistory.add(history[i + 1] - history[i])
             }
 

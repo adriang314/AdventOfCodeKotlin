@@ -31,7 +31,7 @@ class SolutionDay17 : BaseSolution() {
         nodes = rawLines.mapIndexed { rowIdx, s -> Line(s, rowIdx).nodes }
         edges = LinkedList<Edge>()
         for (i in nodes.indices) {
-            for (j in 0..<nodes[i].size) {
+            for (j in 0 until nodes[i].size) {
                 val top = nodes.getOrNull(i - 1)?.getOrNull(j)
                 val bottom = nodes.getOrNull(i + 1)?.getOrNull(j)
                 val left = nodes.getOrNull(i)?.getOrNull(j - 1)

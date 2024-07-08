@@ -44,8 +44,8 @@ class SolutionDay23 : BaseSolution() {
         private val end = tiles.last()[length - 2]
 
         init {
-            for (i in 0..<length) {
-                for (j in 0..<height) {
+            for (i in 0 until length) {
+                for (j in 0 until height) {
                     val curr = tiles[i][j]
                     val up = tiles.getOrNull(i - 1)?.getOrNull(j)
                     val down = tiles.getOrNull(i + 1)?.getOrNull(j)

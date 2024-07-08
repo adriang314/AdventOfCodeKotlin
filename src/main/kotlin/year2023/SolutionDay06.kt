@@ -39,7 +39,7 @@ class SolutionDay06 : BaseSolution() {
         }
 
         private fun countRaceWithNewRecord(race: Race) =
-            (0..<race.time)
+            (0 until race.time)
                 .mapIndexed { index, speed -> speed * (race.time - index) }
                 .count { it > race.record }.toLong()
 

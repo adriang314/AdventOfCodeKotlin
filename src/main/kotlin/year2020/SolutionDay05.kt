@@ -35,7 +35,7 @@ class SolutionDay05 : BaseSolution() {
                 return range.first
             return when (types[idx]) {
                 Type.Back, Type.Right -> extractId(range.last - (range.length() / 2) + 1..range.last, idx + 1)
-                Type.Front, Type.Left -> extractId(range.first..<range.first + (range.length() / 2), idx + 1)
+                Type.Front, Type.Left -> extractId(range.first until range.first + (range.length() / 2), idx + 1)
             }
         }
     }

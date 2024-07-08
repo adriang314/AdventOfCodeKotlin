@@ -56,7 +56,7 @@ class SolutionDay08 : BaseSolution() {
 
         private fun findLCMOfListOfNumbers(numbers: List<Long>): Long {
             var result = numbers[0]
-            for (i in 1..<numbers.size) {
+            for (i in 1 until numbers.size) {
                 result = findLCM(result, numbers[i])
             }
             return result

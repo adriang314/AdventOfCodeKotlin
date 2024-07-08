@@ -30,13 +30,13 @@ class SolutionDay08 : BaseSolution() {
         val height = pointMap.height
         val points = pointMap.points
 
-        setVisibility((0..<height), (0..<length), { i, j -> points[i][j] }) { it.state.fromLeft = true }
-        setVisibility((0..<height), (length - 1 downTo 0), { i, j -> points[i][j] }) { it.state.fromRight = true }
-        setVisibility((0..<length), (0..<height), { i, j -> points[j][i] }) { it.state.fromTop = true }
-        setVisibility((0..<length), (height - 1 downTo 0), { i, j -> points[j][i] }) { it.state.fromBottom = true }
+        setVisibility((0 until height), (0 until length), { i, j -> points[i][j] }) { it.state.fromLeft = true }
+        setVisibility((0 until height), (length - 1 downTo 0), { i, j -> points[i][j] }) { it.state.fromRight = true }
+        setVisibility((0 until length), (0 until height), { i, j -> points[j][i] }) { it.state.fromTop = true }
+        setVisibility((0 until length), (height - 1 downTo 0), { i, j -> points[j][i] }) { it.state.fromBottom = true }
 
-        for (i in 0..<height) {
-            for (j in 0..<length) {
+        for (i in 0 until height) {
+            for (j in 0 until length) {
                 val currPoint = points[i][j]
                 val distLeft = visibleDistance(currPoint) { it.left }
                 val distRight = visibleDistance(currPoint) { it.right }

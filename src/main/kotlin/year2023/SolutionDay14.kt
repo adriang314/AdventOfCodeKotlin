@@ -14,7 +14,7 @@ class SolutionDay14 : BaseSolution() {
     }
 
     override fun task2(): String {
-        for (i in 0..<1_000_000_000L) {
+        for (i in 0 until 1_000_000_000L) {
             board.tilt()
             val key = board.toString()
             if (cache.containsKey(key)) {
@@ -23,7 +23,7 @@ class SolutionDay14 : BaseSolution() {
                 val cycleLength = i - cachedResult.index
                 val limitWithoutNotCycledAttempts = 1_000_000_000L - beforeCycle
                 val tiltsLeftToDo = limitWithoutNotCycledAttempts % cycleLength
-                for (j in 0..<tiltsLeftToDo - 1) {
+                for (j in 0 until tiltsLeftToDo - 1) {
                     board.tilt()
                 }
                 return board.totalValue().toString()
@@ -62,7 +62,7 @@ class SolutionDay14 : BaseSolution() {
         }
 
         fun tiltNorth() {
-            for (colIdx in 0..<length) {
+            for (colIdx in 0 until length) {
                 tilt(
                     Direction.North,
                     rocks = { rocks.getColumn(colIdx).sortedByDescending { it.rowIdx } },
@@ -73,7 +73,7 @@ class SolutionDay14 : BaseSolution() {
         }
 
         private fun tiltWest() {
-            for (rowIdx in 0..<height) {
+            for (rowIdx in 0 until height) {
                 tilt(
                     Direction.West,
                     rocks = { rocks.getRow(rowIdx).sortedByDescending { it.colIdx } },
@@ -84,7 +84,7 @@ class SolutionDay14 : BaseSolution() {
         }
 
         private fun tiltSouth() {
-            for (colIdx in 0..<length) {
+            for (colIdx in 0 until length) {
                 tilt(
                     Direction.South,
                     rocks = { rocks.getColumn(colIdx).sortedBy { it.rowIdx } },
@@ -95,7 +95,7 @@ class SolutionDay14 : BaseSolution() {
         }
 
         private fun tiltEast() {
-            for (rowIdx in 0..<height) {
+            for (rowIdx in 0 until height) {
                 tilt(
                     Direction.East,
                     rocks = { rocks.getRow(rowIdx).sortedBy { it.colIdx } },

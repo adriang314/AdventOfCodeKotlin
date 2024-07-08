@@ -20,12 +20,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Up,
-                map.filter { it.rowIdx == (0 * size) && it.colIdx in (1 * size)..<(2 * size) },
+                map.filter { it.rowIdx == (0 * size) && it.colIdx in (1 * size) until (2 * size) },
                 Facing.Right
             ),
             Triple(
                 Facing.Left,
-                map.filter { it.colIdx == (0 * size) && it.rowIdx in (3 * size)..<(4 * size) },
+                map.filter { it.colIdx == (0 * size) && it.rowIdx in (3 * size) until (4 * size) },
                 Facing.Down
             ),
         )
@@ -33,12 +33,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Left,
-                map.filter { it.colIdx == (1 * size) && it.rowIdx in (0 * size)..<(1 * size) },
+                map.filter { it.colIdx == (1 * size) && it.rowIdx in (0 * size) until (1 * size) },
                 Facing.Right
             ),
             Triple(
                 Facing.Left,
-                map.filter { it.colIdx == (0 * size) && it.rowIdx in (2 * size)..<(3 * size) }.reversed(),
+                map.filter { it.colIdx == (0 * size) && it.rowIdx in (2 * size) until (3 * size) }.reversed(),
                 Facing.Right
             ),
         )
@@ -46,12 +46,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Left,
-                map.filter { it.colIdx == (1 * size) && it.rowIdx in (1 * size)..<(2 * size) },
+                map.filter { it.colIdx == (1 * size) && it.rowIdx in (1 * size) until (2 * size) },
                 Facing.Down
             ),
             Triple(
                 Facing.Up,
-                map.filter { it.rowIdx == (2 * size) && it.colIdx in (0 * size)..<(1 * size) },
+                map.filter { it.rowIdx == (2 * size) && it.colIdx in (0 * size) until (1 * size) },
                 Facing.Right
             ),
         )
@@ -59,12 +59,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Up,
-                map.filter { it.rowIdx == (0 * size) && it.colIdx in (2 * size)..<(3 * size) },
+                map.filter { it.rowIdx == (0 * size) && it.colIdx in (2 * size) until (3 * size) },
                 Facing.Up
             ),
             Triple(
                 Facing.Down,
-                map.filter { it.rowIdx == (4 * size) - 1 && it.colIdx in (0 * size)..<(1 * size) },
+                map.filter { it.rowIdx == (4 * size) - 1 && it.colIdx in (0 * size) until (1 * size) },
                 Facing.Down
             ),
         )
@@ -72,12 +72,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Right,
-                map.filter { it.colIdx == (3 * size) - 1 && it.rowIdx in (0 * size)..<(1 * size) },
+                map.filter { it.colIdx == (3 * size) - 1 && it.rowIdx in (0 * size) until (1 * size) },
                 Facing.Left
             ),
             Triple(
                 Facing.Right,
-                map.filter { it.colIdx == (2 * size) - 1 && it.rowIdx in (2 * size)..<(3 * size) }.reversed(),
+                map.filter { it.colIdx == (2 * size) - 1 && it.rowIdx in (2 * size) until (3 * size) }.reversed(),
                 Facing.Left
             ),
         )
@@ -85,12 +85,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Down,
-                map.filter { it.rowIdx == (1 * size) - 1 && it.colIdx in (2 * size)..<(3 * size) },
+                map.filter { it.rowIdx == (1 * size) - 1 && it.colIdx in (2 * size) until (3 * size) },
                 Facing.Left
             ),
             Triple(
                 Facing.Right,
-                map.filter { it.colIdx == (2 * size) - 1 && it.rowIdx in (1 * size)..<(2 * size) },
+                map.filter { it.colIdx == (2 * size) - 1 && it.rowIdx in (1 * size) until (2 * size) },
                 Facing.Up
             ),
         )
@@ -98,12 +98,12 @@ class SolutionDay22 : BaseSolution() {
         mapEdges(
             Triple(
                 Facing.Down,
-                map.filter { it.rowIdx == (3 * size) - 1 && it.colIdx in (1 * size)..<(2 * size) },
+                map.filter { it.rowIdx == (3 * size) - 1 && it.colIdx in (1 * size) until (2 * size) },
                 Facing.Left
             ),
             Triple(
                 Facing.Right,
-                map.filter { it.colIdx == (1 * size) - 1 && it.rowIdx in (3 * size)..<(4 * size) },
+                map.filter { it.colIdx == (1 * size) - 1 && it.rowIdx in (3 * size) until (4 * size) },
                 Facing.Up
             ),
         )
@@ -118,7 +118,7 @@ class SolutionDay22 : BaseSolution() {
 
         moves.forEach {
             if (it is MoveForward) {
-                for (i in 0..<it.steps) {
+                for (i in 0 until it.steps) {
                     val nextTile = currTile.go(facing)
                     if (nextTile.type == TileType.Rock)
                         break
@@ -167,11 +167,11 @@ class SolutionDay22 : BaseSolution() {
         mapLength = mapParts.maxOf { it.length }
         mapHeight = mapParts.size
         map = mapParts.mapIndexed { x, line ->
-            (0..<mapLength).map { y -> Tile(x, y, TileType.from(line.getOrElse(y) { ' ' })) }
+            (0 until mapLength).map { y -> Tile(x, y, TileType.from(line.getOrElse(y) { ' ' })) }
         }
 
         map3D = mapParts.mapIndexed { x, line ->
-            (0..<mapLength).map { y -> Tile(x, y, TileType.from(line.getOrElse(y) { ' ' })) }
+            (0 until mapLength).map { y -> Tile(x, y, TileType.from(line.getOrElse(y) { ' ' })) }
         }
 
         startTile = map.flatten().first { it.type == TileType.Open }
@@ -182,7 +182,7 @@ class SolutionDay22 : BaseSolution() {
     }
 
     private fun mapEdges(from: Triple<Facing, List<Tile>, Facing>, to: Triple<Facing, List<Tile>, Facing>) {
-        for (i in 0..<from.second.size) {
+        for (i in 0 until from.second.size) {
             val fromTile = from.second[i]
             val toTile = to.second[i]
 
@@ -206,8 +206,8 @@ class SolutionDay22 : BaseSolution() {
     }
 
     private fun mapMoves(map: List<List<Tile>>) {
-        for (i in 0..<mapHeight) {
-            for (j in 0..<mapLength) {
+        for (i in 0 until mapHeight) {
+            for (j in 0 until mapLength) {
                 val current = map[i][j]
                 if (current.type == TileType.None)
                     continue

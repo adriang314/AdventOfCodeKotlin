@@ -23,8 +23,8 @@ class SolutionDay11 : BaseSolution() {
     init {
         val height: Int = locations.size
         val length: Int = locations.first().size
-        for (i in 0..<height) {
-            for (j in 0..<length) {
+        for (i in 0 until height) {
+            for (j in 0 until length) {
                 val current = locations[i][j]
                 val upLeft = locations.getOrNull(i - 1)?.getOrNull(j - 1)
                 val up = locations.getOrNull(i - 1)?.getOrNull(j)
@@ -49,8 +49,8 @@ class SolutionDay11 : BaseSolution() {
             }
         }
 
-        for (i in 0..<height) {
-            for (j in 0..<length) {
+        for (i in 0 until height) {
+            for (j in 0 until length) {
                 val current = locations[i][j]
                 current.longNeighbours = listOfNotNull(
                     current.left?.findLongNeighbour { it.left },

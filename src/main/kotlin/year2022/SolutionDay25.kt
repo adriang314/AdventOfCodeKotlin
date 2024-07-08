@@ -125,7 +125,7 @@ class SolutionDay25 : BaseSolution() {
         fun hasUpper() = this != Two
 
         companion object {
-            fun from(c: Char) = entries.first { it.coded == c }
+            fun from(c: Char) = values().first { it.coded == c }
         }
     }
 }

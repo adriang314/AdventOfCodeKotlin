@@ -65,7 +65,7 @@ class SolutionDay21 : BaseSolution() {
         for (i in initTilesAtGivenStepNumber.indices) {
             val currList = mutableListOf<Long>()
             arr.add(currList)
-            for (j in 0..<initTilesAtGivenStepNumber[i].size) {
+            for (j in 0 until initTilesAtGivenStepNumber[i].size) {
                 val initValue = initTilesAtGivenStepNumber[i][j]
                 val incrementValue = initVsNextTilesDiff[i][j]
                 val cycleDiffValue = diffTilesInCycle[i][j]
@@ -88,7 +88,7 @@ class SolutionDay21 : BaseSolution() {
         for (i in list1.indices) {
             val currList = mutableListOf<Long>()
             arr.add(currList)
-            for (j in 0..<list1[i].size)
+            for (j in 0 until list1[i].size)
                 currList.add(list1[i][j] - list2[i][j])
         }
 
@@ -112,10 +112,10 @@ class SolutionDay21 : BaseSolution() {
         val tilesWithStartTile = lines.map { line ->
             var result = ""
             val cleanL = line.replace('S', '.')
-            for (i in 0..<factor)
+            for (i in 0 until factor)
                 result += cleanL
             result += line
-            for (i in 0..<factor)
+            for (i in 0 until factor)
                 result += cleanL
             result
         }
@@ -123,10 +123,10 @@ class SolutionDay21 : BaseSolution() {
         val tilesNoStartTile = tilesWithStartTile.map { it.replace('S', '.') }
 
         val final = LinkedList<String>()
-        for (i in 0..<factor)
+        for (i in 0 until factor)
             final.addAll(tilesNoStartTile)
         final.addAll(tilesWithStartTile)
-        for (i in 0..<factor)
+        for (i in 0 until factor)
             final.addAll(tilesNoStartTile)
         return final
     }
@@ -138,8 +138,8 @@ class SolutionDay21 : BaseSolution() {
         var startTile: Tile = Tile(-1, -1, TileType.Start)
 
         init {
-            for (i in 0..<height) {
-                for (j in 0..<length) {
+            for (i in 0 until height) {
+                for (j in 0 until length) {
                     val curr = tiles[i][j]
                     val up = tiles.getOrNull(i - 1)?.getOrNull(j)
                     val down = tiles.getOrNull(i + 1)?.getOrNull(j)

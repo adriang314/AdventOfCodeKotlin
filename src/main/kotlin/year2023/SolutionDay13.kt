@@ -69,8 +69,8 @@ class SolutionDay13 : BaseSolution() {
         }
 
         fun findSmudge(): Mirror {
-            for (i in 0..<height) {
-                for (j in 0..<length) {
+            for (i in 0 until height) {
+                for (j in 0 until length) {
                     val linesWithSmudge = lines.mapIndexed { currIdx, currLine ->
                         if (currIdx == i) {
                             val currItem = currLine[j]
@@ -140,7 +140,7 @@ class SolutionDay13 : BaseSolution() {
 
         private fun findVerticalOptions(line: String, allowedIdx: List<Int>, check: Boolean): List<Int> {
             val options = mutableListOf<Int>()
-            for (i in 0..<line.length - 1) {
+            for (i in 0 until line.length - 1) {
                 val thisItem = line[i]
                 val nextItem = line[i + 1]
                 if (thisItem == nextItem && (!check || allowedIdx.contains(i))) {
@@ -152,7 +152,7 @@ class SolutionDay13 : BaseSolution() {
 
         private fun findHorizontalOptions(lines: List<String>): List<Int> {
             val options = mutableListOf<Int>()
-            for (i in 0..<lines.size - 1) {
+            for (i in 0 until lines.size - 1) {
                 val thisItem = lines[i]
                 val nextItem = lines[i + 1]
                 if (thisItem == nextItem) {

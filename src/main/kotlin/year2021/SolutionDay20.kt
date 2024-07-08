@@ -42,8 +42,8 @@ class SolutionDay20 : BaseSolution() {
         val height: Int = points.size
         val length: Int = points.first().size
 
-        for (rowIdx in 0..<height) {
-            for (colIdx in 0..<length) {
+        for (rowIdx in 0 until height) {
+            for (colIdx in 0 until length) {
                 val current = points[rowIdx][colIdx]
 
                 current.top = points.getOrNull(rowIdx - 1)?.getOrNull(colIdx)
@@ -61,9 +61,9 @@ class SolutionDay20 : BaseSolution() {
     private fun extendPoints(points: List<List<Point>>, algorithm: Algorithm): List<List<Point>> {
         val newLength = points.first().size + 2
         val extensionType = algorithm.extensionType()
-        val extendedPoints = (0..<newLength).map { rowIdx ->
+        val extendedPoints = (0 until newLength).map { rowIdx ->
             if ((rowIdx - 1 < 0) || (rowIdx - 1) >= points.size)
-                (0..<newLength).map { Point(extensionType, extensionType) }
+                (0 until newLength).map { Point(extensionType, extensionType) }
             else
                 listOf(Point(extensionType, extensionType))
                     .plus(points[rowIdx - 1])

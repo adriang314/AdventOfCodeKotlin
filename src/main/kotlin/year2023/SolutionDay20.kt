@@ -19,7 +19,7 @@ class SolutionDay20 : BaseSolution() {
         val input = Input(rawLines)
         val modules = input.modules
         val broadcast = modules.filterIsInstance<Broadcast>().first()
-        for (i in 0..<1000)
+        for (i in 0 until 1000)
             broadcast.pushButton()
         val highPulses = modules.sumOf { it.highPulseSent }
         val lowPulses = modules.sumOf { it.lowPulseSent }
@@ -43,7 +43,7 @@ class SolutionDay20 : BaseSolution() {
 
     private fun findLCMOfListOfNumbers(numbers: List<Long>): Long {
         var result = numbers[0]
-        for (i in 1..<numbers.size) {
+        for (i in 1 until numbers.size) {
             result = findLCM(result, numbers[i])
         }
         return result

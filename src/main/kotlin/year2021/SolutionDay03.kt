@@ -28,7 +28,7 @@ class SolutionDay03 : BaseSolution() {
         val lines = input().split("\r\n")
         val length = lines.first().length
 
-        gamma = (0..<length).map { index ->
+        gamma = (0 until length).map { index ->
             val zeros = lines.map { it[index] }.count { it == '0' }
             val ones = lines.map { it[index] }.count { it == '1' }
             if (ones == zeros)
@@ -36,7 +36,7 @@ class SolutionDay03 : BaseSolution() {
             if (ones > zeros) '1' else '0'
         }.joinToString("")
 
-        epsilon = (0..<length).map { index ->
+        epsilon = (0 until length).map { index ->
             val zeros = lines.map { it[index] }.count { it == '0' }
             val ones = lines.map { it[index] }.count { it == '1' }
             if (ones == zeros)

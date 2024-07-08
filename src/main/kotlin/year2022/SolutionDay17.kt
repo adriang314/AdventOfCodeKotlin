@@ -35,8 +35,8 @@ class SolutionDay17 : BaseSolution() {
         val rocksToCount = 1_000_000_000_000L
         val cycleSize = findCycle(chamber)
 
-        val initRange = 0..<cycleSize
-        val firstCycleRange = cycleSize..<(cycleSize + cycleSize)
+        val initRange = 0 until cycleSize
+        val firstCycleRange = cycleSize until (cycleSize + cycleSize)
 
         val initValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in initRange }.sum()
         val cycleValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in firstCycleRange }.sum()
@@ -45,7 +45,7 @@ class SolutionDay17 : BaseSolution() {
         val cyclesValue = cyclesToCount * cycleValue
 
         val reminder = rocksToCount - (cyclesToCount * cycleSize) - cycleSize
-        val reminderRange = cycleSize..<(cycleSize + reminder)
+        val reminderRange = cycleSize until (cycleSize + reminder)
         val reminderValue = chamber.heightChanges.filterIndexed { idx, _ -> idx in reminderRange }.sum()
         val result = initValue + cyclesValue + reminderValue
 
