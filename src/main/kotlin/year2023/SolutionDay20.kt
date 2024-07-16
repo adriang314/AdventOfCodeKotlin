@@ -1,6 +1,7 @@
 package year2023
 
 import common.BaseSolution
+import common.LeastCommonMultiple
 
 private var iteration = 0L
 private var iterationBh = 0L
@@ -37,29 +38,8 @@ class SolutionDay20 : BaseSolution() {
             broadcast.pushButton()
         }
 
-        val result = findLCMOfListOfNumbers(listOf(iterationJf, iterationMz, iterationSh, iterationBh))
+        val result = LeastCommonMultiple.find(listOf(iterationJf, iterationMz, iterationSh, iterationBh))
         return result.toString()
-    }
-
-    private fun findLCMOfListOfNumbers(numbers: List<Long>): Long {
-        var result = numbers[0]
-        for (i in 1 until numbers.size) {
-            result = findLCM(result, numbers[i])
-        }
-        return result
-    }
-
-    private fun findLCM(a: Long, b: Long): Long {
-        val larger = if (a > b) a else b
-        val maxLcm = a * b
-        var lcm = larger
-        while (lcm <= maxLcm) {
-            if (lcm % a == 0L && lcm % b == 0L) {
-                return lcm
-            }
-            lcm += larger
-        }
-        return maxLcm
     }
 
     class Input(lines: List<String>) {
