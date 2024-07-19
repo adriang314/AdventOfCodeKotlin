@@ -1,6 +1,7 @@
 package year2019
 
 import common.BaseSolution
+import common.allPermutations
 import kotlinx.coroutines.*
 import java.util.concurrent.BlockingDeque
 import java.util.concurrent.LinkedBlockingDeque
@@ -15,13 +16,13 @@ class SolutionDay07 : BaseSolution() {
     private val initProgramData = input().split(",").map { it.toLong() }
 
     override fun task1(): String {
-        val phaseSettings = allPermutations(setOf(0L, 1L, 2L, 3L, 4L))
+        val phaseSettings = setOf(0L, 1L, 2L, 3L, 4L).allPermutations()
         val maxOutput = execute(phaseSettings)
         return maxOutput.toString()
     }
 
     override fun task2(): String {
-        val phaseSettings = allPermutations(setOf(5L, 6L, 7L, 8L, 9L))
+        val phaseSettings = setOf(5L, 6L, 7L, 8L, 9L).allPermutations()
         val maxOutput = execute(phaseSettings)
         return maxOutput.toString()
     }
@@ -59,22 +60,6 @@ class SolutionDay07 : BaseSolution() {
             }
         }
         return maxOutput
-    }
-
-    private fun <T> allPermutations(set: Set<T>): Set<List<T>> {
-        if (set.isEmpty())
-            return emptySet()
-
-        fun <T> allPermutationsInternal(list: List<T>): Set<List<T>> {
-            if (list.isEmpty())
-                return setOf(emptyList())
-            val result: MutableSet<List<T>> = mutableSetOf()
-            for (i in list.indices) {
-                allPermutationsInternal(list - list[i]).forEach { item -> result.add(item + list[i]) }
-            }
-            return result
-        }
-        return allPermutationsInternal(set.toList())
     }
 
     private class Runner(val program: Program) {
