@@ -12,6 +12,15 @@ class LinkedListWithCache<E> {
         var next: Node<E>?
     )
 
+    fun forEach(action: (E) -> Unit) {
+        var currElement = head
+        while (currElement != null) {
+            val nextElement = currElement.next
+            action(currElement.element)
+            currElement = nextElement
+        }
+    }
+
     fun getBefore(element: E, offset: Int): E {
         var node = map[element]!!
 
@@ -51,6 +60,14 @@ class LinkedListWithCache<E> {
     fun size() = size
 
     fun addBefore(element: E, beforeElement: E) = linkBefore(element, map[beforeElement]!!)
+
+    fun addAfter(element: E, afterElement: E) {
+        val afterElementNode = map[afterElement]!!
+        if (afterElementNode.next != null)
+            linkBefore(element, afterElementNode.next!!)
+        else
+            linkTail(element)
+    }
 
     operator fun contains(element: E) = map.containsKey(element)
 
