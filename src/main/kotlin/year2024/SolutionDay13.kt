@@ -1,6 +1,10 @@
 package year2024
 
 import common.BaseSolution
+import org.apache.commons.math3.linear.Array2DRowRealMatrix
+import org.apache.commons.math3.linear.ArrayRealVector
+import org.apache.commons.math3.linear.LUDecomposition
+import kotlin.math.roundToLong
 
 fun main() = println(SolutionDay13().result())
 
@@ -62,14 +66,25 @@ class SolutionDay13 : BaseSolution() {
             // solving two equations to find buttons count
             // prize.x = aButton.xShift * A(press) + bButton.xShift * B(press)
             // prize.y = aButton.yShift * A(press) + bButton.yShift * B(press)
+            val coefficients = Array2DRowRealMatrix(
+                arrayOf(
+                    doubleArrayOf(aButton.xShift.toDouble(), bButton.xShift.toDouble()),
+                    doubleArrayOf(aButton.yShift.toDouble(), bButton.yShift.toDouble())
+                ),
+                false
+            )
+            val solver = LUDecomposition(coefficients).solver
+            val constants = ArrayRealVector(doubleArrayOf(prize.x.toDouble(), prize.y.toDouble()), false)
+            val solution = solver.solve(constants)
+            val aResult = solution.getEntry(0).roundToLong()
+            val bResult = solution.getEntry(1).roundToLong()
 
-            val bUpper = (prize.y * aButton.xShift) - (prize.x * aButton.yShift)
-            val bLower = (bButton.yShift * aButton.xShift) - (bButton.xShift * aButton.yShift)
-            val bResult = bUpper / bLower
-
-            val aUpper = prize.x - (bResult * bButton.xShift)
-            val aLower = aButton.xShift
-            val aResult = aUpper / aLower
+//            val bUpper = (prize.y * aButton.xShift) - (prize.x * aButton.yShift)
+//            val bLower = (bButton.yShift * aButton.xShift) - (bButton.xShift * aButton.yShift)
+//            val bResult = bUpper / bLower
+//            val aUpper = prize.x - (bResult * bButton.xShift)
+//            val aLower = aButton.xShift
+//            val aResult = aUpper / aLower
 
             val xPrizeOk = (aResult * aButton.xShift + bResult * bButton.xShift) == prize.x
             val yPrizeOk = (aResult * aButton.yShift + bResult * bButton.yShift) == prize.y
