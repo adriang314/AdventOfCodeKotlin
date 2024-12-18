@@ -1,7 +1,7 @@
 package year2022
 
-import com.google.common.math.LongMath.pow
 import common.BaseSolution
+import common.pow
 
 fun main() = println(SolutionDay25().result())
 
@@ -29,7 +29,7 @@ class SolutionDay25 : BaseSolution() {
         init {
             var decimal = 0L
             numbers = text.toList().map { SnafuDigit.from(it) }
-            numbers.reversed().mapIndexed { idx, digit -> decimal += pow(5L, idx) * digit.decimal }
+            numbers.reversed().mapIndexed { idx, digit -> decimal += 5.pow(idx) * digit.decimal }
             decimalNumber = decimal
         }
 
@@ -125,7 +125,7 @@ class SolutionDay25 : BaseSolution() {
         fun hasUpper() = this != Two
 
         companion object {
-            fun from(c: Char) = values().first { it.coded == c }
+            fun from(c: Char) = entries.first { it.coded == c }
         }
     }
 }
