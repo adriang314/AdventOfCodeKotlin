@@ -9,11 +9,26 @@ package common
 //   |
 //   |
 //   v
+/**
+ * Represents a position in a 2D grid.
+ *
+ * @param x The x coordinate. Length from the left edge of the grid.
+ * @param y The y coordinate. Length from the top edge of the grid.
+ */
 data class Position(val x: Int, val y: Int) {
-    fun up() = Position(x, y - 1)
-    fun down() = Position(x, y + 1)
-    fun left() = Position(x - 1, y)
-    fun right() = Position(x + 1, y)
+    fun up() = n()
+    fun down() = s()
+    fun left() = w()
+    fun right() = e()
+
+    fun n() = Position(x, y - 1)
+    fun s() = Position(x, y + 1)
+    fun e() = Position(x + 1, y)
+    fun w() = Position(x - 1, y)
+    fun nw() = Position(x - 1, y - 1)
+    fun ne() = Position(x + 1, y - 1)
+    fun sw() = Position(x - 1, y + 1)
+    fun se() = Position(x + 1, y + 1)
 
     fun next(direction: Direction) = when (direction) {
         Direction.Up -> up()
