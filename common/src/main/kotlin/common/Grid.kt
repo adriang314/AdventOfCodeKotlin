@@ -1,22 +1,36 @@
 package common
 
-data class Cell<T>(val position: Position, val value: T) {
-    var n: Cell<T>? = null
-    var s: Cell<T>? = null
-    var e: Cell<T>? = null
-    var w: Cell<T>? = null
-    var nw: Cell<T>? = null
-    var ne: Cell<T>? = null
-    var sw: Cell<T>? = null
-    var se: Cell<T>? = null
+import kotlin.math.absoluteValue
+
+abstract class Cell(val position: Position, val c: Char) {
+    var n: Cell? = null
+    var s: Cell? = null
+    var e: Cell? = null
+    var w: Cell? = null
+    var nw: Cell? = null
+    var ne: Cell? = null
+    var sw: Cell? = null
+    var se: Cell? = null
+
+    /**
+     * Return N, E, S, W neighbours.
+     */
+    fun neighbours() = listOfNotNull(n, e, s, w)
+
+    /**
+     * Return N, NE, E, SE, S, SW, W, NW neighbours.
+     */
+    fun neighboursAll() = listOfNotNull(n, ne, e, se, s, sw, w, nw)
 }
 
-class Grid<T>(input: String, valueMapper: (Grid<T>, Char, Position) -> T) {
-    val cells: Map<Position, Cell<T>>
+class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
+    val cells: Map<Position, T>
+    val height: Int
+    val width: Int
 
     init {
         val lines = input.lines()
-        val tempCells = mutableMapOf<Position, Cell<T>>()
+        val tempCells = mutableMapOf<Position, T>()
 //   ------X----->
 //   |
 //   |
@@ -30,7 +44,7 @@ class Grid<T>(input: String, valueMapper: (Grid<T>, Char, Position) -> T) {
             for (x in lines[y].indices) {
                 val position = Position(x, y)
                 val name = lines[y][x]
-                tempCells[position] = Cell(position, valueMapper(this, name, position))
+                tempCells[position] = cellFactory(name, position)
             }
         }
 
@@ -46,9 +60,26 @@ class Grid<T>(input: String, valueMapper: (Grid<T>, Char, Position) -> T) {
         }
 
         cells = tempCells
+        height = lines.size
+        width = lines.first().length
     }
 
-    fun getCell(position: Position): Cell<T>? {
+    /**
+     * Returns the Manhattan distance between two positions.
+     */
+    fun distance(a: Position, b: Position): Long {
+        return (a.x - b.x).absoluteValue + (a.y - b.y).absoluteValue.toLong()
+    }
+
+    fun isPositionOnEdge(position: Position): Boolean {
+        if (position.x == 0 || position.y == 0)
+            return true
+        if (position.x == width - 1 || position.y == height - 1)
+            return true
+        return false
+    }
+
+    fun getCell(position: Position): T? {
         return cells[position]
     }
 }
