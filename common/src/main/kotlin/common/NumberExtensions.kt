@@ -16,6 +16,28 @@ fun Int.numberOfDigits(): Int =
         else -> 1 + (this / 10).numberOfDigits()
     }
 
+fun String.parseToInt() : Int {
+    var number = this
+    while (this.startsWith('0')) {
+        number = number.substring(1)
+    }
+
+    if (number.isEmpty())
+        return 0
+    return number.toInt()
+}
+
+fun String.parseToLong() : Long {
+    var number = this
+    while (this.startsWith('0')) {
+        number = number.substring(1)
+    }
+
+    if (number.isEmpty())
+        return 0L
+    return number.toLong()
+}
+
 fun Long.isEven(): Boolean = this % 2L == 0L
 
 fun Int.isEven(): Boolean = this % 2 == 0
