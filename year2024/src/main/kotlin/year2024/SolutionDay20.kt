@@ -24,8 +24,8 @@ class SolutionDay20 : BaseSolution() {
     init {
         map = Grid(input()) { c, position -> Point(position, c) }.also { grid ->
             grid.cells.values.forEach {
-                if (it.c == 'S') startPoint = it
-                if (it.c == 'E') endPoint = it
+                if (it.value == 'S') startPoint = it
+                if (it.value == 'E') endPoint = it
 
                 it.canGoN = it.isOpenSpace() && grid.getCell(it.position.n())?.isOpenSpace() ?: false
                 it.canGoS = it.isOpenSpace() && grid.getCell(it.position.s())?.isOpenSpace() ?: false
@@ -36,15 +36,15 @@ class SolutionDay20 : BaseSolution() {
             }
 
             grid.cells.values.forEach {
-                if (it.canGoN) graph.addEdge(it.position.toString(), it.position.n().toString())
-                if (it.canGoS) graph.addEdge(it.position.toString(), it.position.s().toString())
-                if (it.canGoW) graph.addEdge(it.position.toString(), it.position.w().toString())
-                if (it.canGoE) graph.addEdge(it.position.toString(), it.position.e().toString())
+                if (it.canGoN) graph.addEdge(it.position, it.position.n())
+                if (it.canGoS) graph.addEdge(it.position, it.position.s())
+                if (it.canGoW) graph.addEdge(it.position, it.position.w())
+                if (it.canGoE) graph.addEdge(it.position, it.position.e())
             }
         }
 
         algorithm = BidirectionalDijkstraShortestPath(graph)
-        val shortestPath = algorithm.getPath(startPoint.position.toString(), endPoint.position.toString())
+        val shortestPath = algorithm.getPath(startPoint.position, endPoint.position)
         pathPlaces = shortestPath.vertexList.mapIndexed { idx, position -> map.getCell(position)!! to idx }.toMap()
         pathLength = shortestPath.length
     }
@@ -103,6 +103,6 @@ class SolutionDay20 : BaseSolution() {
     }
 
     private class Point(position: Position, c: Char) : Cell(position, c) {
-        fun isOpenSpace() = c != '#'
+        fun isOpenSpace() = value != '#'
     }
 }

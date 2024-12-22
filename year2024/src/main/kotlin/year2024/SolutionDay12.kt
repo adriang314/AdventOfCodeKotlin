@@ -11,10 +11,10 @@ class SolutionDay12 : BaseSolution() {
     private val garden: Grid<GardenCell> = Grid(input()) { c, position -> GardenCell(position, c) }
         .also { garden ->
             garden.cells.values.forEach {
-                it.canGoN = it.n?.c == it.c
-                it.canGoS = it.s?.c == it.c
-                it.canGoW = it.w?.c == it.c
-                it.canGoE = it.e?.c == it.c
+                it.canGoN = it.n?.value == it.value
+                it.canGoS = it.s?.value == it.value
+                it.canGoW = it.w?.value == it.value
+                it.canGoE = it.e?.value == it.value
             }
         }
     private val regions: List<Region>

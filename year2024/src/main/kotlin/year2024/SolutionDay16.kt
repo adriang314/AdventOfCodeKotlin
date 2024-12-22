@@ -93,9 +93,9 @@ class SolutionDay16 : BaseSolution() {
     )
 
     private class Place(position: Position, c: Char) : Cell(position, c) {
-        fun isStartPoint() = c == 'S'
-        fun isEndPoint() = c == 'E'
-        fun isWall() = c == '#'
+        fun isStartPoint() = value == 'S'
+        fun isEndPoint() = value == 'E'
+        fun isWall() = value == '#'
         fun isSpace() = !isWall()
     }
 }

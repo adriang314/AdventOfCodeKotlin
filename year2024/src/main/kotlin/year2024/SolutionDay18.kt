@@ -43,24 +43,24 @@ class SolutionDay18 : BaseSolution() {
                 if (it.position == Position(0, 0)) startPoint = it
                 if (it.position == Position(mapSize, mapSize)) endPoint = it
 
-                it.canGoN = it.n?.c == '.'
-                it.canGoS = it.s?.c == '.'
-                it.canGoW = it.w?.c == '.'
-                it.canGoE = it.e?.c == '.'
+                it.canGoN = it.n?.value == '.'
+                it.canGoS = it.s?.value == '.'
+                it.canGoW = it.w?.value == '.'
+                it.canGoE = it.e?.value == '.'
 
                 graph.addVertex(it.position.toString())
             }
 
             grid.cells.values.forEach {
-                if (it.canGoN) graph.addEdge(it.position.toString(), it.position.n().toString())
-                if (it.canGoS) graph.addEdge(it.position.toString(), it.position.s().toString())
-                if (it.canGoW) graph.addEdge(it.position.toString(), it.position.w().toString())
-                if (it.canGoE) graph.addEdge(it.position.toString(), it.position.e().toString())
+                if (it.canGoN) graph.addEdge(it.position, it.position.n())
+                if (it.canGoS) graph.addEdge(it.position, it.position.s())
+                if (it.canGoW) graph.addEdge(it.position, it.position.w())
+                if (it.canGoE) graph.addEdge(it.position, it.position.e())
             }
         }
 
         val algorithm = BidirectionalDijkstraShortestPath(graph)
-        return algorithm.getPath(startPoint.position.toString(), endPoint.position.toString())?.length
+        return algorithm.getPath(startPoint.position, endPoint.position)?.length
     }
 
     private class Point(position: Position, c: Char) : Cell(position, c)

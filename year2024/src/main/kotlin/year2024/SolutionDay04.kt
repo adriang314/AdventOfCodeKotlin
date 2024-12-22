@@ -12,8 +12,8 @@ class SolutionDay04 : BaseSolution() {
     override val day = 4
 
     private val grid = Grid(input()) { c, position -> Letter(position, c) }
-    private val xLetters = grid.cells.filterValues { it.c == 'X' }.map { it.value }
-    private val aLetters = grid.cells.filterValues { it.c == 'A' }.map { it.value }
+    private val xLetters = grid.cells.filterValues { it.value == 'X' }.map { it.value }
+    private val aLetters = grid.cells.filterValues { it.value == 'A' }.map { it.value }
 
     override fun task1(): String {
         val result = xLetters.sumOf { it.xmas1Count() }
@@ -28,33 +28,33 @@ class SolutionDay04 : BaseSolution() {
     private class Letter(pos: Position, c: Char) : Cell(pos, c) {
 
         fun xmas1Count(): Int {
-            if (c != 'X')
+            if (value != 'X')
                 return 0
 
             var count = 0
-            if (e?.c == 'M' && e?.e?.c == 'A' && e?.e?.e?.c == 'S')
+            if (e?.value == 'M' && e?.e?.value == 'A' && e?.e?.e?.value == 'S')
                 count++
-            if (w?.c == 'M' && w?.w?.c == 'A' && w?.w?.w?.c == 'S')
+            if (w?.value == 'M' && w?.w?.value == 'A' && w?.w?.w?.value == 'S')
                 count++
-            if (n?.c == 'M' && n?.n?.c == 'A' && n?.n?.n?.c == 'S')
+            if (n?.value == 'M' && n?.n?.value == 'A' && n?.n?.n?.value == 'S')
                 count++
-            if (s?.c == 'M' && s?.s?.c == 'A' && s?.s?.s?.c == 'S')
+            if (s?.value == 'M' && s?.s?.value == 'A' && s?.s?.s?.value == 'S')
                 count++
-            if (ne?.c == 'M' && ne?.ne?.c == 'A' && ne?.ne?.ne?.c == 'S')
+            if (ne?.value == 'M' && ne?.ne?.value == 'A' && ne?.ne?.ne?.value == 'S')
                 count++
-            if (nw?.c == 'M' && nw?.nw?.c == 'A' && nw?.nw?.nw?.c == 'S')
+            if (nw?.value == 'M' && nw?.nw?.value == 'A' && nw?.nw?.nw?.value == 'S')
                 count++
-            if (se?.c == 'M' && se?.se?.c == 'A' && se?.se?.se?.c == 'S')
+            if (se?.value == 'M' && se?.se?.value == 'A' && se?.se?.se?.value == 'S')
                 count++
-            if (sw?.c == 'M' && sw?.sw?.c == 'A' && sw?.sw?.sw?.c == 'S')
+            if (sw?.value == 'M' && sw?.sw?.value == 'A' && sw?.sw?.sw?.value == 'S')
                 count++
             return count
         }
 
         fun xmas2Count() =
-            if (c == 'A' &&
-                ((nw?.c == 'M' && se?.c == 'S') || (nw?.c == 'S' && se?.c == 'M')) &&
-                ((ne?.c == 'M' && sw?.c == 'S') || (ne?.c == 'S' && sw?.c == 'M'))
+            if (value == 'A' &&
+                ((nw?.value == 'M' && se?.value == 'S') || (nw?.value == 'S' && se?.value == 'M')) &&
+                ((ne?.value == 'M' && sw?.value == 'S') || (ne?.value == 'S' && sw?.value == 'M'))
             ) 1 else 0
     }
 }

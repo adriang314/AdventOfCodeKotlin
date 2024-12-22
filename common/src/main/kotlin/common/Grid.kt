@@ -1,6 +1,6 @@
 package common
 
-abstract class Cell(val position: Position, val c: Char) {
+abstract class Cell(val position: Position, val value: Char) {
     var n: Cell? = null
     var s: Cell? = null
     var e: Cell? = null
@@ -62,8 +62,6 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
     var width = builder.xRange.length()
 
     private fun buildCells(builder: Builder, cellFactory: (Char, Position) -> T): Map<Position, T> {
-
-
         val tempCells = mutableMapOf<Position, T>()
 //   ------X----->
 //   |
