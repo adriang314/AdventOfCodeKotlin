@@ -1,7 +1,5 @@
 package common
 
-import kotlin.math.absoluteValue
-
 abstract class Cell(val position: Position, val c: Char) {
     var n: Cell? = null
     var s: Cell? = null
@@ -50,13 +48,22 @@ abstract class Cell(val position: Position, val c: Char) {
     fun neighboursAll() = listOfNotNull(n, ne, e, se, s, sw, w, nw)
 }
 
-class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
-    val cells: Map<Position, T>
-    val height: Int
-    val width: Int
+class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
+    constructor(input: String, cellFactory: (Char, Position) -> T) :
+            this(input.lines().let {
+                val lines = input.lines().map { it.toList() }
+                val yRange = lines.indices
+                val xRange = lines.first().indices
+                Builder(xRange, yRange) { position -> lines[position.y][position.x] }
+            }, cellFactory)
 
-    init {
-        val lines = input.lines()
+    val cells: Map<Position, T> = buildCells(builder, cellFactory)
+    var height = builder.yRange.length()
+    var width = builder.xRange.length()
+
+    private fun buildCells(builder: Builder, cellFactory: (Char, Position) -> T): Map<Position, T> {
+
+
         val tempCells = mutableMapOf<Position, T>()
 //   ------X----->
 //   |
@@ -67,10 +74,10 @@ class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
 //   |
 //   |
 //   v
-        for (y in lines.indices) {
-            for (x in lines[y].indices) {
+        for (y in builder.yRange) {
+            for (x in builder.xRange) {
                 val position = Position(x, y)
-                val name = lines[y][x]
+                val name = builder.charOnPosition(position)
                 tempCells[position] = cellFactory(name, position)
             }
         }
@@ -86,9 +93,7 @@ class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
             cell.se = tempCells[cell.position.se()]
         }
 
-        cells = tempCells
-        height = lines.size
-        width = lines.first().length
+        return tempCells
     }
 
     fun isPositionOnEdge(position: Position): Boolean {
@@ -112,4 +117,6 @@ class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
     fun getCell(position: Position): T? {
         return cells[position]
     }
+
+    class Builder(val xRange: IntRange, val yRange: IntRange, val charOnPosition: (position: Position) -> Char)
 }
