@@ -27,6 +27,11 @@ abstract class Cell(val position: Position, val c: Char) {
     fun neighbours() = listOfNotNull(n, e, s, w)
 
     /**
+     * Returns the Manhattan distance between this cell and the other one
+     */
+    fun distanceTo(other: Cell): Long = this.position.distanceTo(other.position)
+
+    /**
      * Find direction from current cell of given neighbour.
      */
     fun findNeighbourDirection(neighbour: Cell): Direction {
@@ -86,13 +91,6 @@ class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
         width = lines.first().length
     }
 
-    /**
-     * Returns the Manhattan distance between two positions.
-     */
-    fun distance(a: Position, b: Position): Long {
-        return (a.x - b.x).absoluteValue + (a.y - b.y).absoluteValue.toLong()
-    }
-
     fun isPositionOnEdge(position: Position): Boolean {
         if (position.x == 0 || position.y == 0)
             return true
@@ -101,6 +99,16 @@ class Grid<T : Cell>(input: String, cellFactory: (Char, Position) -> T) {
         return false
     }
 
+    /**
+     * Returns the cell at the given string position (e.g. "0,0").
+     */
+    fun getCell(position: String): T? {
+        return cells[Position.fromString(position)]
+    }
+
+    /**
+     * Returns the cell at the given position.
+     */
     fun getCell(position: Position): T? {
         return cells[position]
     }

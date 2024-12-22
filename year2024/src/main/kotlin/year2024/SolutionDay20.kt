@@ -1,8 +1,6 @@
 package year2024
 
-import common.BaseSolution
-import common.Point
-import common.PointMap
+import common.*
 import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleDirectedGraph
@@ -15,38 +13,39 @@ class SolutionDay20 : BaseSolution() {
 
     override val day = 20
 
-    private val pointMap: PointMap<Paths, Square>
-    private lateinit var startPoint: Point<Paths, Square>
-    private lateinit var endPoint: Point<Paths, Square>
+    private val map: Grid<Point>
+    private lateinit var startPoint: Point
+    private lateinit var endPoint: Point
     private val graph = SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge::class.java)
     private val algorithm: BidirectionalDijkstraShortestPath<String, DefaultEdge>
-    private val pathPointsMap: Map<Point<Paths, Square>, Int> // value = length from start point
+    private val pathPlaces: Map<Point, Int> // value = length from start point
     private val pathLength: Int
 
     init {
-        pointMap = PointMap(input(), ::Square) { Paths() }
-        pointMap.points.flatten().forEach {
-            if (it.value.name == 'S') startPoint = it
-            if (it.value.name == 'E') endPoint = it
+        map = Grid(input()) { c, position -> Point(position, c) }.also { grid ->
+            grid.cells.values.forEach {
+                if (it.c == 'S') startPoint = it
+                if (it.c == 'E') endPoint = it
 
-            it.state.canGoUp = it.value.isOpenSpace() && it.up?.value?.isOpenSpace() ?: false
-            it.state.canGoDown = it.value.isOpenSpace() && it.down?.value?.isOpenSpace() ?: false
-            it.state.canGoLeft = it.value.isOpenSpace() && it.left?.value?.isOpenSpace() ?: false
-            it.state.canGoRight = it.value.isOpenSpace() && it.right?.value?.isOpenSpace() ?: false
+                it.canGoN = it.isOpenSpace() && grid.getCell(it.position.n())?.isOpenSpace() ?: false
+                it.canGoS = it.isOpenSpace() && grid.getCell(it.position.s())?.isOpenSpace() ?: false
+                it.canGoW = it.isOpenSpace() && grid.getCell(it.position.w())?.isOpenSpace() ?: false
+                it.canGoE = it.isOpenSpace() && grid.getCell(it.position.e())?.isOpenSpace() ?: false
 
-            graph.addVertex(it.id)
-        }
+                graph.addVertex(it.position.toString())
+            }
 
-        pointMap.points.flatten().forEach {
-            if (it.state.canGoLeft) graph.addEdge(it.id, it.left!!.id)
-            if (it.state.canGoRight) graph.addEdge(it.id, it.right!!.id)
-            if (it.state.canGoUp) graph.addEdge(it.id, it.up!!.id)
-            if (it.state.canGoDown) graph.addEdge(it.id, it.down!!.id)
+            grid.cells.values.forEach {
+                if (it.canGoN) graph.addEdge(it.position.toString(), it.position.n().toString())
+                if (it.canGoS) graph.addEdge(it.position.toString(), it.position.s().toString())
+                if (it.canGoW) graph.addEdge(it.position.toString(), it.position.w().toString())
+                if (it.canGoE) graph.addEdge(it.position.toString(), it.position.e().toString())
+            }
         }
 
         algorithm = BidirectionalDijkstraShortestPath(graph)
-        val shortestPath = algorithm.getPath(startPoint.id, endPoint.id)
-        pathPointsMap = shortestPath.vertexList.mapIndexed { idx, id -> pointMap.pointMap[id]!! to idx }.toMap()
+        val shortestPath = algorithm.getPath(startPoint.position.toString(), endPoint.position.toString())
+        pathPlaces = shortestPath.vertexList.mapIndexed { idx, position -> map.getCell(position)!! to idx }.toMap()
         pathLength = shortestPath.length
     }
 
@@ -61,15 +60,15 @@ class SolutionDay20 : BaseSolution() {
     }
 
     private fun getBestCheatsSum(length: Int): Long {
-        val startCheatPoints = pathPointsMap.keys
-        val bestCheats = mutableMapOf<Int, Long>() // key = saved time, count
+        val startCheatPoints = pathPlaces.keys
+        val bestCheats = mutableMapOf<Long, Long>() // key = saved time, count
         startCheatPoints.forEach { cheatStartPoint ->
             val endCheatPoints = getEndCheatPoints(cheatStartPoint, length)
-            val lengthFromStartPointToStartCheatPoint = pathPointsMap[cheatStartPoint]!!
+            val lengthFromStartPointToStartCheatPoint = pathPlaces[cheatStartPoint]!!
 
             endCheatPoints.forEach { endCheatPoint ->
-                val lengthFromEndCheatPointToEndPoint = pathLength - pathPointsMap[endCheatPoint]!!
-                var savedTime = pathLength
+                val lengthFromEndCheatPointToEndPoint = pathLength - pathPlaces[endCheatPoint]!!
+                var savedTime = pathLength.toLong()
                 savedTime -= lengthFromStartPointToStartCheatPoint
                 savedTime -= lengthFromEndCheatPointToEndPoint
                 savedTime -= cheatStartPoint.distanceTo(endCheatPoint)
@@ -83,20 +82,19 @@ class SolutionDay20 : BaseSolution() {
         return bestCheats.values.sum()
     }
 
-    private fun getEndCheatPoints(startCheatPoint: Point<Paths, Square>, length: Int): List<Point<Paths, Square>> {
-        val result = LinkedList<Point<Paths, Square>>()
-        for (rowShift in -length..length) {
-            for (colShift in -length..length) {
-                if (rowShift == 0 && colShift == 0)
+    private fun getEndCheatPoints(startCheatPoint: Point, length: Int): List<Point> {
+        val result = LinkedList<Point>()
+        for (yShift in -length..length) {
+            for (xShift in -length..length) {
+                if (yShift == 0 && xShift == 0)
                     continue
-                if (rowShift.absoluteValue + colShift.absoluteValue > length)
+                if (yShift.absoluteValue + xShift.absoluteValue > length)
                     continue
 
-                val newRowIdx = startCheatPoint.rowIdx + rowShift
-                val newColIdx = startCheatPoint.colIdx + colShift
-                pointMap.pointMap["[$newRowIdx,$newColIdx]"]?.let { newPoint ->
-                    if (newPoint.value.isOpenSpace())
-                        result.add(newPoint)
+                map.getCell(startCheatPoint.position.shift(xShift, yShift))?.let { newPlace ->
+                    if (newPlace.isOpenSpace()) {
+                        result.add(newPlace)
+                    }
                 }
             }
         }
@@ -104,14 +102,7 @@ class SolutionDay20 : BaseSolution() {
         return result
     }
 
-    private data class Square(val name: Char) {
-        fun isOpenSpace() = name != '#'
-    }
-
-    private class Paths {
-        var canGoUp = false
-        var canGoDown = false
-        var canGoLeft = false
-        var canGoRight = false
+    private class Point(position: Position, c: Char) : Cell(position, c) {
+        fun isOpenSpace() = c != '#'
     }
 }

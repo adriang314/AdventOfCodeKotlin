@@ -1,5 +1,7 @@
 package common
 
+import kotlin.math.absoluteValue
+
 //   ------X----->
 //   |
 //   |
@@ -30,6 +32,8 @@ data class Position(val x: Int, val y: Int) {
     fun sw() = Position(x - 1, y + 1)
     fun se() = Position(x + 1, y + 1)
 
+    fun shift(xShift: Int, yShift: Int) = Position(x + xShift, y + yShift)
+
     fun next(direction: Direction) = when (direction) {
         Direction.Up -> up()
         Direction.Down -> down()
@@ -37,7 +41,21 @@ data class Position(val x: Int, val y: Int) {
         Direction.Right -> right()
     }
 
+    /**
+     * Returns the Manhattan distance between this position and the other one
+     */
+    fun distanceTo(other: Position): Long {
+        return (this.x - other.x).absoluteValue + (this.y - other.y).absoluteValue.toLong()
+    }
+
     override fun toString() = "$x,$y"
+
+    companion object {
+        fun fromString(s: String): Position {
+            val (x, y) = s.split(",").map { it.toInt() }
+            return Position(x, y)
+        }
+    }
 }
 
 data class DirectedPosition(
