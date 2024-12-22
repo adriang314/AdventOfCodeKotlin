@@ -1,8 +1,6 @@
 package year2022
 
-import common.BaseSolution
-import common.Point
-import common.PointMap
+import common.*
 import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleDirectedGraph
@@ -11,61 +9,54 @@ fun main() = println(SolutionDay12().result())
 
 class SolutionDay12 : BaseSolution() {
     override val day = 12
-    
+
     override fun task1(): String {
         val algorithm = BidirectionalDijkstraShortestPath(graph)
-        val shortestPath = algorithm.getPath(startPoint!!.id(), endPoint!!.id())
+        val shortestPath = algorithm.getPath(startPoint.position, endPoint.position)!!
         return shortestPath.length.toString()
     }
 
     override fun task2(): String {
         val algorithm = BidirectionalDijkstraShortestPath(graph)
-        val startPoints = pointMap.points.flatten().filter { it.value.height == 'a'.code }
-        val shortestPath = startPoints.mapNotNull { algorithm.getPath(it.id(), endPoint!!.id()) }.minBy { it.length }
+        val startPoints = map.cells.values.filter { it.height == 'a'.code }
+        val shortestPath =
+            startPoints.mapNotNull { algorithm.getPath(it.position, endPoint.position) }.minBy { it.length }
         return shortestPath.length.toString()
     }
 
-    private val pointMap: PointMap<Paths, Square>
-    private var startPoint: Point<Paths, Square>? = null
-    private var endPoint: Point<Paths, Square>? = null
+    private val map: Grid<Point>
+    private lateinit var startPoint: Point
+    private lateinit var endPoint: Point
     private val graph = SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge::class.java)
 
     init {
-        pointMap = PointMap(input(), ::Square) { Paths() }
-        pointMap.points.flatten().forEach {
-            if (it.value.name == 'S') startPoint = it
-            if (it.value.name == 'E') endPoint = it
+        map = Grid(input()) { value, position -> Point(position, value) }.also { grid ->
+            grid.cells.values.forEach {
+                if (it.value == 'S') startPoint = it
+                if (it.value == 'E') endPoint = it
 
-            it.state.canGoUp = (it.up?.value?.height ?: Int.MAX_VALUE) <= it.value.height + 1
-            it.state.canGoDown = (it.down?.value?.height ?: Int.MAX_VALUE) <= it.value.height + 1
-            it.state.canGoLeft = (it.left?.value?.height ?: Int.MAX_VALUE) <= it.value.height + 1
-            it.state.canGoRight = (it.right?.value?.height ?: Int.MAX_VALUE) <= it.value.height + 1
+                it.canGoN = (grid.getCell(it.position.n())?.height ?: Int.MAX_VALUE) <= it.height + 1
+                it.canGoS = (grid.getCell(it.position.s())?.height ?: Int.MAX_VALUE) <= it.height + 1
+                it.canGoW = (grid.getCell(it.position.w())?.height ?: Int.MAX_VALUE) <= it.height + 1
+                it.canGoE = (grid.getCell(it.position.e())?.height ?: Int.MAX_VALUE) <= it.height + 1
 
-            graph.addVertex(it.id())
-        }
+                graph.addVertex(it.position)
+            }
 
-        pointMap.points.flatten().forEach {
-            if (it.state.canGoLeft) graph.addEdge(it.id(), it.left!!.id())
-            if (it.state.canGoRight) graph.addEdge(it.id(), it.right!!.id())
-            if (it.state.canGoUp) graph.addEdge(it.id(), it.up!!.id())
-            if (it.state.canGoDown) graph.addEdge(it.id(), it.down!!.id())
+            grid.cells.values.forEach {
+                if (it.canGoN) graph.addEdge(it.position, it.position.n())
+                if (it.canGoS) graph.addEdge(it.position, it.position.s())
+                if (it.canGoW) graph.addEdge(it.position, it.position.w())
+                if (it.canGoE) graph.addEdge(it.position, it.position.e())
+            }
         }
     }
 
-    private fun Point<Paths, Square>.id(): String = "[${this.rowIdx},${this.colIdx}]"
-
-    data class Square(val name: Char) {
-        val height: Int = when (name) {
+    private class Point(position: Position, value: Char) : Cell(position, value) {
+        val height: Int = when (value) {
             'S' -> 'a'.code
             'E' -> 'z'.code
-            else -> name.code
+            else -> value.code
         }
-    }
-
-    class Paths {
-        var canGoUp = false
-        var canGoDown = false
-        var canGoLeft = false
-        var canGoRight = false
     }
 }

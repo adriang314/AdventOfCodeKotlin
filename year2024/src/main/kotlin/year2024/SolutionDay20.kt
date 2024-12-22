@@ -44,7 +44,7 @@ class SolutionDay20 : BaseSolution() {
         }
 
         algorithm = BidirectionalDijkstraShortestPath(graph)
-        val shortestPath = algorithm.getPath(startPoint.position, endPoint.position)
+        val shortestPath = algorithm.getPath(startPoint.position, endPoint.position)!!
         pathPlaces = shortestPath.vertexList.mapIndexed { idx, position -> map.getCell(position)!! to idx }.toMap()
         pathLength = shortestPath.length
     }

@@ -5,6 +5,12 @@ import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleDirectedGraph
 
+fun SimpleDirectedGraph<String, DefaultEdge>.addVertex(
+    position: Position,
+) {
+    addVertex(position.toString())
+}
+
 fun SimpleDirectedGraph<String, DefaultEdge>.addEdge(
     from: Position,
     to: Position,
@@ -15,6 +21,6 @@ fun SimpleDirectedGraph<String, DefaultEdge>.addEdge(
 fun BidirectionalDijkstraShortestPath<String, DefaultEdge>.getPath(
     from: Position,
     to: Position
-): GraphPath<String, DefaultEdge> {
-    return this.getPath(from.toString(), to.toString())
+): GraphPath<String, DefaultEdge>? {
+    return getPath(from.toString(), to.toString())
 }
