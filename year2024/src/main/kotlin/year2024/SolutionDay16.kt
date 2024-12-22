@@ -1,9 +1,6 @@
 package year2024
 
-import common.BaseSolution
-import common.Direction
-import common.Point
-import common.PointMap
+import common.*
 import java.util.LinkedList
 
 fun main() = println(SolutionDay16().result())
@@ -11,58 +8,37 @@ fun main() = println(SolutionDay16().result())
 class SolutionDay16 : BaseSolution() {
 
     override val day = 16
-    
-    private val pointMap: PointMap<Paths, PointType>
-    private lateinit var startPoint: Point<Paths, PointType>
-    private lateinit var endPoint: Point<Paths, PointType>
-    private var bestPaths = LinkedList<Path>()
 
-    init {
-        pointMap = PointMap(input(), ::PointType) { Paths() }
-        pointMap.points.flatten().forEach {
-            if (it.value.isStartPoint) startPoint = it
-            if (it.value.isEndPoint) endPoint = it
+    private val map = Grid(input()) { c, position -> Place(position, c) }
+        .also { grid ->
+            grid.cells.values.forEach {
+                if (it.isStartPoint()) startPlace = it
+                if (it.isEndPoint()) endPlace = it
 
-            it.state.canGoUp = it.up?.value?.isSpace == true
-            it.state.canGoDown = it.down?.value?.isSpace == true
-            it.state.canGoLeft = it.left?.value?.isSpace == true
-            it.state.canGoRight = it.right?.value?.isSpace == true
-        }
-
-        // remove dead ends
-        var changed = true
-        while (changed) {
-            changed = false
-            pointMap.points.flatten().forEach {
-                var moves = 0
-                if (it.state.canGoUp) moves++
-                if (it.state.canGoDown) moves++
-                if (it.state.canGoLeft) moves++
-                if (it.state.canGoRight) moves++
-
-                if (!it.value.isEndPoint && !it.value.isStartPoint && moves == 1) {
-                    changed = true
-                    it.value.name = '#'
-                    it.state.canGoRight = false
-                    it.state.canGoLeft = false
-                    it.state.canGoDown = false
-                    it.state.canGoUp = false
-                }
+                it.canGoN = grid.getCell(it.position.n())?.isSpace() == true
+                it.canGoS = grid.getCell(it.position.s())?.isSpace() == true
+                it.canGoW = grid.getCell(it.position.w())?.isSpace() == true
+                it.canGoE = grid.getCell(it.position.e())?.isSpace() == true
             }
         }
 
+    private lateinit var startPlace: Place
+    private lateinit var endPlace: Place
+    private var bestPaths = LinkedList<Path>()
+
+    init {
         findBestPaths()
     }
 
     private fun findBestPaths() {
-        val queue = LinkedList<Path>()
-        queue.add(Path(startPoint, setOf(startPoint.id), 0L, Direction.Right))
+        val pathsToCheck = LinkedList<Path>()
+        pathsToCheck.add(Path(startPlace, setOf(startPlace.position), 0L, Direction.Right))
 
-        val bestScores = mutableMapOf<PointWithDirection, Long>()
-        while (queue.isNotEmpty()) {
-            val currPath = queue.pop()
+        val bestScores = mutableMapOf<DirectedPosition, Long>()
+        while (pathsToCheck.isNotEmpty()) {
+            val currPath = pathsToCheck.pop()
 
-            if (currPath.currentPoint === endPoint) {
+            if (currPath.currentPlace === endPlace) {
                 if (bestPaths.isEmpty())
                     bestPaths.add(currPath)
                 else {
@@ -74,26 +50,24 @@ class SolutionDay16 : BaseSolution() {
                     }
                 }
             } else {
-                currPath.currentPoint.neighbours()
-                    .filter { neighbour -> !neighbour.value.isWall && !currPath.visitedPoints.contains(neighbour.id) }
+                currPath.currentPlace.neighbours()
+                    .map { map.getCell(it.position)!! }
+                    .filter { neighbour -> !neighbour.isWall() && !currPath.visitedPositions.contains(neighbour.position) }
                     .forEach { neighbour ->
-                        val neighbourDirection =
-                            when {
-                                currPath.currentPoint.up === neighbour -> Direction.Up
-                                currPath.currentPoint.down === neighbour -> Direction.Down
-                                currPath.currentPoint.left === neighbour -> Direction.Left
-                                currPath.currentPoint.right === neighbour -> Direction.Right
-                                else -> throw RuntimeException("Unknown direction")
-                            }
-
+                        val neighbourDirection = currPath.currentPlace.findNeighbourDirection(neighbour)
                         val newScore = currPath.score + (1000 * currPath.direction.turnsTo(neighbourDirection)) + 1
 
                         // new path worth to check
-                        val pointWithDirection = PointWithDirection(neighbour.id, neighbourDirection)
-                        if (!bestScores.containsKey(pointWithDirection) || bestScores[pointWithDirection]!! >= newScore) {
-                            bestScores[pointWithDirection] = newScore
-                            queue.add(
-                                Path(neighbour, currPath.visitedPoints.plus(neighbour.id), newScore, neighbourDirection)
+                        val directedPosition = DirectedPosition(neighbourDirection, neighbour.position)
+                        if (!bestScores.containsKey(directedPosition) || bestScores[directedPosition]!! >= newScore) {
+                            bestScores[directedPosition] = newScore
+                            pathsToCheck.add(
+                                Path(
+                                    neighbour,
+                                    currPath.visitedPositions.plus(neighbour.position),
+                                    newScore,
+                                    neighbourDirection
+                                )
                             )
                         }
                     }
@@ -107,33 +81,21 @@ class SolutionDay16 : BaseSolution() {
     }
 
     override fun task2(): String {
-        val result = bestPaths.map { it.visitedPoints }.flatten().toSet().size
+        val result = bestPaths.map { it.visitedPositions }.flatten().toSet().size
         return result.toString()
     }
 
     private class Path(
-        val currentPoint: Point<Paths, PointType>,
-        val visitedPoints: Set<String>,
+        val currentPlace: Place,
+        val visitedPositions: Set<Position>,
         val score: Long,
         val direction: Direction
     )
 
-    private data class PointWithDirection(
-        val pointId: String,
-        val direction: Direction
-    )
-
-    data class PointType(var name: Char) {
-        val isStartPoint = name == 'S'
-        val isEndPoint = name == 'E'
-        val isWall = name == '#'
-        val isSpace = !isWall
-    }
-
-    private class Paths {
-        var canGoUp = false
-        var canGoDown = false
-        var canGoLeft = false
-        var canGoRight = false
+    private class Place(position: Position, c: Char) : Cell(position, c) {
+        fun isStartPoint() = c == 'S'
+        fun isEndPoint() = c == 'E'
+        fun isWall() = c == '#'
+        fun isSpace() = !isWall()
     }
 }

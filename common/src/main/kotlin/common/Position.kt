@@ -40,6 +40,11 @@ data class Position(val x: Int, val y: Int) {
     override fun toString() = "$x,$y"
 }
 
+data class DirectedPosition(
+    val direction: Direction,
+    val position: Position,
+)
+
 enum class Direction {
     Left, Right, Up, Down;
 

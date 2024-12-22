@@ -27,6 +27,19 @@ abstract class Cell(val position: Position, val c: Char) {
     fun neighbours() = listOfNotNull(n, e, s, w)
 
     /**
+     * Find direction from current cell of given neighbour.
+     */
+    fun findNeighbourDirection(neighbour: Cell): Direction {
+        return when {
+            n === neighbour -> Direction.Up
+            s === neighbour -> Direction.Down
+            w === neighbour -> Direction.Left
+            e === neighbour -> Direction.Right
+            else -> throw RuntimeException("Unknown direction")
+        }
+    }
+
+    /**
      * Return N, NE, E, SE, S, SW, W, NW neighbours.
      */
     fun neighboursAll() = listOfNotNull(n, ne, e, se, s, sw, w, nw)
