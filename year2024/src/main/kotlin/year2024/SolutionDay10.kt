@@ -1,75 +1,66 @@
 package year2024
 
-import common.BaseSolution
-import common.Point
-import common.PointMap
+import common.*
 
 fun main() = println(SolutionDay10().result())
 
 class SolutionDay10 : BaseSolution() {
 
     override val day = 10
-    
-    private val pointMap: PointMap<Paths, Hill>
-    private val zeroPoints: List<Point<Paths, Hill>>
 
-    init {
-        pointMap = PointMap(input(), ::Hill) { Paths() }
-        pointMap.points.flatten().forEach {
-            it.state.canGoUp = (it.up?.value?.height ?: Int.MAX_VALUE) == it.value.height + 1
-            it.state.canGoDown = (it.down?.value?.height ?: Int.MAX_VALUE) == it.value.height + 1
-            it.state.canGoLeft = (it.left?.value?.height ?: Int.MAX_VALUE) == it.value.height + 1
-            it.state.canGoRight = (it.right?.value?.height ?: Int.MAX_VALUE) == it.value.height + 1
+    private val hills = Grid(input()) { c, position -> Hill(position, c) }.also { grid ->
+        grid.cells.values.forEach {
+            it.canGoN = it.n()?.height == it.height + 1
+            it.canGoS = it.s()?.height == it.height + 1
+            it.canGoW = it.w()?.height == it.height + 1
+            it.canGoE = it.e()?.height == it.height + 1
         }
-
-        zeroPoints = pointMap.points.flatten().filter { it.value.height == 0 }
     }
+    private val zeroHills: List<Hill> = hills.cells.values.filter { it.height == 0 }
 
     override fun task1(): String {
-        val result = zeroPoints.sumOf { go1(it).size }
+        val result = zeroHills.sumOf { go1(it).size }
         return result.toString()
     }
 
     override fun task2(): String {
-        val result = zeroPoints.sumOf { go2(it) }
+        val result = zeroHills.sumOf { go2(it) }
         return result.toString()
     }
 
-    private fun go1(point: Point<Paths, Hill>): Set<Point<Paths, Hill>> {
-        if (point.value.highest)
-            return setOf(point)
+    private fun go1(hill: Hill): Set<Hill> {
+        if (hill.isHighest)
+            return setOf(hill)
 
-        val result = mutableSetOf<Point<Paths, Hill>>()
-        if (point.state.canGoUp) result.addAll(go1(point.up!!))
-        if (point.state.canGoDown) result.addAll(go1(point.down!!))
-        if (point.state.canGoLeft) result.addAll(go1(point.left!!))
-        if (point.state.canGoRight) result.addAll(go1(point.right!!))
+        val result = mutableSetOf<Hill>()
+        if (hill.canGoN) result.addAll(go1(hill.n()!!))
+        if (hill.canGoS) result.addAll(go1(hill.s()!!))
+        if (hill.canGoW) result.addAll(go1(hill.w()!!))
+        if (hill.canGoE) result.addAll(go1(hill.e()!!))
 
         return result
     }
 
-    private fun go2(point: Point<Paths, Hill>): Int {
-        if (point.value.highest)
+    private fun go2(hill: Hill): Int {
+        if (hill.isHighest)
             return 1
 
         var result = 0
-        if (point.state.canGoUp) result += go2(point.up!!)
-        if (point.state.canGoDown) result += go2(point.down!!)
-        if (point.state.canGoLeft) result += go2(point.left!!)
-        if (point.state.canGoRight) result += go2(point.right!!)
+        if (hill.canGoN) result += go2(hill.n()!!)
+        if (hill.canGoS) result += go2(hill.s()!!)
+        if (hill.canGoW) result += go2(hill.w()!!)
+        if (hill.canGoE) result += go2(hill.e()!!)
 
         return result
     }
 
-    private data class Hill(val id: Char) {
-        val height = id.digitToInt()
-        val highest = height == 9
-    }
+    private class Hill(position: Position, c: Char) : Cell(position, c) {
+        val height = c.digitToInt()
+        val isHighest = height == 9
 
-    private class Paths {
-        var canGoUp = false
-        var canGoDown = false
-        var canGoLeft = false
-        var canGoRight = false
+        fun n() = n as Hill?
+        fun s() = s as Hill?
+        fun w() = w as Hill?
+        fun e() = e as Hill?
     }
 }
