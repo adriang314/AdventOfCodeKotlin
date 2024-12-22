@@ -1,37 +1,35 @@
 package year2024
 
-import common.BaseSolution
-import common.Point
-import common.PointMap
+import common.*
 
 fun main() = println(SolutionDay12().result())
 
 class SolutionDay12 : BaseSolution() {
 
     override val day = 12
-    
-    private val pointMap: PointMap<Connections, GardenPlot>
+
+    private val garden: Grid<GardenCell> = Grid(input()) { c, position -> GardenCell(position, c) }
+        .also { garden ->
+            garden.cells.values.forEach {
+                it.canGoN = it.n?.c == it.c
+                it.canGoS = it.s?.c == it.c
+                it.canGoW = it.w?.c == it.c
+                it.canGoE = it.e?.c == it.c
+            }
+        }
     private val regions: List<Region>
 
     init {
-        pointMap = PointMap(input(), ::GardenPlot) { Connections() }
-        pointMap.points.flatten().forEach {
-            it.state.canGoUp = it.up?.value?.id == it.value.id
-            it.state.canGoDown = it.down?.value?.id == it.value.id
-            it.state.canGoLeft = it.left?.value?.id == it.value.id
-            it.state.canGoRight = it.right?.value?.id == it.value.id
-        }
-
         val tmpRegions = mutableListOf<Region>()
-        val points = pointMap.points.flatten().toMutableSet()
+        val gardenCells = garden.cells.values.toMutableList()
 
-        while (points.isNotEmpty()) {
-            val point = points.first()
+        while (gardenCells.isNotEmpty()) {
+            val gardenCell = gardenCells.first()
 
-            val region = Region(point)
+            val region = Region(gardenCell)
             tmpRegions.add(region)
 
-            region.points().forEach { points.remove(it) }
+            region.gardenCells().forEach { gardenCells.remove(it) }
         }
 
         regions = tmpRegions.toList()
@@ -47,23 +45,22 @@ class SolutionDay12 : BaseSolution() {
         return result.toString()
     }
 
-    private class Region(point: Point<Connections, GardenPlot>) {
-        // key == point id, value == point
-        private val points = mutableMapOf<String, Point<Connections, GardenPlot>>()
+    private class Region(innerGardenCell: GardenCell) {
+        private val gardenCells = mutableMapOf<Position, GardenCell>()
         private val fences = mutableSetOf<Fence>()
         private var requiredFence = 0
         private var totalSides = 0
 
-        fun size() = points.size
+        fun size() = gardenCells.size
 
         fun fences() = requiredFence
 
         fun sides() = totalSides
 
-        fun points() = points.values
+        fun gardenCells() = gardenCells.values
 
         init {
-            createRegion(point)
+            createRegion(innerGardenCell)
             calculateSides()
         }
 
@@ -84,78 +81,54 @@ class SolutionDay12 : BaseSolution() {
 
             fences.remove(fence)
             when (fence.side) {
-                Side.Up -> {
-                    removeSameSideFences(Fence(fence.rowIdx, fence.colIdx - 1, fence.side))
-                    removeSameSideFences(Fence(fence.rowIdx, fence.colIdx + 1, fence.side))
+                Side.Up, Side.Down -> {
+                    removeSameSideFences(Fence(fence.position.w(), fence.side))
+                    removeSameSideFences(Fence(fence.position.e(), fence.side))
                 }
 
-                Side.Down -> {
-                    removeSameSideFences(Fence(fence.rowIdx, fence.colIdx - 1, fence.side))
-                    removeSameSideFences(Fence(fence.rowIdx, fence.colIdx + 1, fence.side))
-                }
-
-                Side.Left -> {
-                    removeSameSideFences(Fence(fence.rowIdx - 1, fence.colIdx, fence.side))
-                    removeSameSideFences(Fence(fence.rowIdx + 1, fence.colIdx, fence.side))
-                }
-
-                Side.Right -> {
-                    removeSameSideFences(Fence(fence.rowIdx - 1, fence.colIdx, fence.side))
-                    removeSameSideFences(Fence(fence.rowIdx + 1, fence.colIdx, fence.side))
+                Side.Left, Side.Right -> {
+                    removeSameSideFences(Fence(fence.position.n(), fence.side))
+                    removeSameSideFences(Fence(fence.position.s(), fence.side))
                 }
             }
         }
 
-        private fun createRegion(point: Point<Connections, GardenPlot>) {
-            if (points.containsKey(point.id))
+        private fun createRegion(gardenCell: GardenCell) {
+            if (gardenCells.containsKey(gardenCell.position))
                 return
 
-            val canGoUp = point.state.canGoUp
-            val canGoDown = point.state.canGoDown
-            val canGoLeft = point.state.canGoLeft
-            val canGoRight = point.state.canGoRight
-
             var directions = 4
-            if (canGoUp) directions--
-            if (canGoDown) directions--
-            if (canGoLeft) directions--
-            if (canGoRight) directions--
+            if (gardenCell.canGoN) directions--
+            if (gardenCell.canGoS) directions--
+            if (gardenCell.canGoE) directions--
+            if (gardenCell.canGoW) directions--
 
-            if (!canGoUp) fences.add(Fence(point.rowIdx, point.colIdx, Side.Up))
-            if (!canGoDown) fences.add(Fence(point.rowIdx, point.colIdx, Side.Down))
-            if (!canGoLeft) fences.add(Fence(point.rowIdx, point.colIdx, Side.Left))
-            if (!canGoRight) fences.add(Fence(point.rowIdx, point.colIdx, Side.Right))
+            if (!gardenCell.canGoN) fences.add(Fence(gardenCell.position, Side.Up))
+            if (!gardenCell.canGoS) fences.add(Fence(gardenCell.position, Side.Down))
+            if (!gardenCell.canGoE) fences.add(Fence(gardenCell.position, Side.Left))
+            if (!gardenCell.canGoW) fences.add(Fence(gardenCell.position, Side.Right))
 
             requiredFence += directions
 
-            points[point.id] = point
+            gardenCells[gardenCell.position] = gardenCell
 
-            if (canGoUp && !points.containsKey(point.up!!.id))
-                createRegion(point.up!!)
+            if (gardenCell.canGoN && !gardenCells.containsKey(gardenCell.n!!.position))
+                createRegion(gardenCell.n as GardenCell)
 
-            if (canGoDown && !points.containsKey(point.down!!.id))
-                createRegion(point.down!!)
+            if (gardenCell.canGoS && !gardenCells.containsKey(gardenCell.s!!.position))
+                createRegion(gardenCell.s as GardenCell)
 
-            if (canGoLeft && !points.containsKey(point.left!!.id))
-                createRegion(point.left!!)
+            if (gardenCell.canGoW && !gardenCells.containsKey(gardenCell.w!!.position))
+                createRegion(gardenCell.w as GardenCell)
 
-            if (canGoRight && !points.containsKey(point.right!!.id))
-                createRegion(point.right!!)
+            if (gardenCell.canGoE && !gardenCells.containsKey(gardenCell.e!!.position))
+                createRegion(gardenCell.e as GardenCell)
         }
     }
 
-    private data class Fence(val rowIdx: Int, val colIdx: Int, val side: Side)
+    private data class Fence(val position: Position, val side: Side)
 
     private enum class Side { Up, Down, Left, Right }
 
-    private data class GardenPlot(val id: Char)
-
-    private class Connections {
-        var canGoUp = false
-        var canGoDown = false
-        var canGoLeft = false
-        var canGoRight = false
-
-        override fun toString() = "U:$canGoUp D:$canGoDown L:$canGoLeft R:$canGoRight"
-    }
+    private class GardenCell(position: Position, c: Char) : Cell(position, c)
 }

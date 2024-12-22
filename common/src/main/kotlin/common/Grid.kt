@@ -12,6 +12,15 @@ abstract class Cell(val position: Position, val c: Char) {
     var sw: Cell? = null
     var se: Cell? = null
 
+    var canGoN = false
+    var canGoNW = false
+    var canGoNE = false
+    var canGoS = false
+    var canGoSW = false
+    var canGoSE = false
+    var canGoE = false
+    var canGoW = false
+
     /**
      * Return N, E, S, W neighbours.
      */
