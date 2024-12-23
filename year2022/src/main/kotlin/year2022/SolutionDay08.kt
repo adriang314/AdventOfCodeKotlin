@@ -1,98 +1,102 @@
 package year2022
 
-import common.BaseSolution
-import common.Point
-import common.PointMap
+import common.*
 
 fun main() = println(SolutionDay08().result())
 
-private typealias PointWithVisibility = Point<SolutionDay08.Visibility, Int>
-
 class SolutionDay08 : BaseSolution() {
+
     override val day = 8
-    
+
+    private val treeMap = TreeMap(input())
+
     override fun task1(): String {
-        val visibleCount = pointMap.points.flatten().count { it.state.isVisible() }
+        val visibleCount = treeMap.points().count { it.isVisible() }
         return visibleCount.toString()
     }
 
     override fun task2(): String {
-        val maxScenicScore = pointMap.points.flatten().map { it.state.visibleDistance.scenicScore }.maxBy { it }
+        val maxScenicScore = treeMap.points().map { it.visibleDistance.scenicScore }.maxBy { it }
         return maxScenicScore.toString()
     }
 
-    private val pointMap: PointMap<Visibility, Int>
+    private class TreeMap(treeMap: String) {
+        private val map = Grid(treeMap) { c, position -> TreePoint(position, c) }
+        private val width = map.width
+        private val height = map.height
 
-    init {
-        pointMap = PointMap(input(), Char::digitToInt) { Visibility() }
-        val length = pointMap.length
-        val height = pointMap.height
-        val points = pointMap.points
+        init {
+            setVisibility((0..<height), (0..<width), { y, x -> point(x, y) }) { it.visibleFromW = true }
+            setVisibility((0..<height), (width - 1 downTo 0), { y, x -> point(x, y) }) { it.visibleFromE = true }
+            setVisibility((0..<width), (0..<height), { x, y -> point(x, y) }) { it.visibleFromN = true }
+            setVisibility((0..<width), (height - 1 downTo 0), { x, y -> point(x, y) }) { it.visibleFromS = true }
 
-        setVisibility((0 until height), (0 until length), { i, j -> points[i][j] }) { it.state.fromLeft = true }
-        setVisibility((0 until height), (length - 1 downTo 0), { i, j -> points[i][j] }) { it.state.fromRight = true }
-        setVisibility((0 until length), (0 until height), { i, j -> points[j][i] }) { it.state.fromTop = true }
-        setVisibility((0 until length), (height - 1 downTo 0), { i, j -> points[j][i] }) { it.state.fromBottom = true }
-
-        for (i in 0 until height) {
-            for (j in 0 until length) {
-                val currPoint = points[i][j]
-                val distLeft = visibleDistance(currPoint) { it.left }
-                val distRight = visibleDistance(currPoint) { it.right }
-                val distUp = visibleDistance(currPoint) { it.up }
-                val distDown = visibleDistance(currPoint) { it.down }
-                currPoint.state.visibleDistance = VisibleDistance(distLeft, distRight, distUp, distDown)
-            }
-        }
-    }
-
-    private fun setVisibility(
-        range1: Iterable<Int>,
-        range2: Iterable<Int>,
-        currPointProvider: (Int, Int) -> PointWithVisibility,
-        setVisible: (PointWithVisibility) -> Unit
-    ) {
-        var max: Int?
-        for (i in range1) {
-            max = null
-            for (j in range2) {
-                val currPoint = currPointProvider(i, j)
-                if (max == null || currPoint.value > max) {
-                    max = currPoint.value
-                    setVisible(currPoint)
+            for (y in 0..<height) {
+                for (x in 0..<width) {
+                    val distW = visibleDistance(point(x, y)) { it.w as TreePoint? }
+                    val distE = visibleDistance(point(x, y)) { it.e as TreePoint? }
+                    val distN = visibleDistance(point(x, y)) { it.n as TreePoint? }
+                    val distS = visibleDistance(point(x, y)) { it.s as TreePoint? }
+                    point(x, y).visibleDistance = VisibleDistance(distW, distE, distN, distS)
                 }
             }
         }
-    }
 
-    private fun visibleDistance(
-        currPoint: PointWithVisibility,
-        nextPointProvider: (PointWithVisibility) -> PointWithVisibility?
-    ): Int {
-        var viewingDistance = 0
-        var nextPoint = nextPointProvider(currPoint)
-        while (nextPoint != null) {
-            viewingDistance++
-            if (nextPoint.value >= currPoint.value)
-                return viewingDistance
-            nextPoint = nextPointProvider(nextPoint)
+        fun points() = map.values
+
+        private fun point(x: Int, y: Int) = map.getCell(x, y)!!
+
+        private fun setVisibility(
+            range1: Iterable<Int>,
+            range2: Iterable<Int>,
+            currPointProvider: (Int, Int) -> TreePoint,
+            setVisible: (TreePoint) -> Unit
+        ) {
+            var max: Int?
+            for (i in range1) {
+                max = null
+                for (j in range2) {
+                    val currPoint = currPointProvider(i, j)
+                    if (max == null || currPoint.height > max) {
+                        max = currPoint.height
+                        setVisible(currPoint)
+                    }
+                }
+            }
         }
-        return viewingDistance
+
+        private fun visibleDistance(
+            currPoint: TreePoint,
+            nextPointProvider: (TreePoint) -> TreePoint?
+        ): Int {
+            var viewingDistance = 0
+            var nextPoint = nextPointProvider(currPoint)
+            while (nextPoint != null) {
+                viewingDistance++
+                if (nextPoint.value >= currPoint.value)
+                    return viewingDistance
+                nextPoint = nextPointProvider(nextPoint)
+            }
+            return viewingDistance
+        }
     }
 
-    class Visibility {
-        var fromLeft = false
-        var fromRight = false
-        var fromTop = false
-        var fromBottom = false
-        var visibleDistance: VisibleDistance = VisibleDistance.empty
 
-        fun isVisible() = fromLeft || fromRight || fromTop || fromBottom
+    private class TreePoint(position: Position, value: Char) : Cell(position, value) {
+        val height = value.digitToInt()
+
+        var visibleFromW = false
+        var visibleFromE = false
+        var visibleFromN = false
+        var visibleFromS = false
+        var visibleDistance = VisibleDistance.empty
+
+        fun isVisible() = visibleFromW || visibleFromE || visibleFromN || visibleFromS
 
         override fun toString() = "${isVisible()} score: ${visibleDistance.scenicScore}"
     }
 
-    data class VisibleDistance(val left: Int, val right: Int, val up: Int, val down: Int) {
+    private data class VisibleDistance(val left: Int, val right: Int, val up: Int, val down: Int) {
         val scenicScore = left * right * up * down
 
         companion object {

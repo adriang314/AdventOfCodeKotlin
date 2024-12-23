@@ -58,6 +58,7 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
             }, cellFactory)
 
     val cells: Map<Position, T> = buildCells(builder, cellFactory)
+    val values = cells.values
     var height = builder.yRange.length()
     var width = builder.xRange.length()
 
@@ -107,6 +108,13 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
      */
     fun getCell(position: String): T? {
         return cells[Position.fromString(position)]
+    }
+
+    /**
+     * Returns the cell at the given (x,y) position.
+     */
+    fun getCell(x: Int, y: Int): T? {
+        return cells[Position(x, y)]
     }
 
     /**
