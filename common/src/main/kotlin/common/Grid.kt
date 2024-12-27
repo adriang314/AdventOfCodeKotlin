@@ -1,14 +1,20 @@
 package common
 
-abstract class Cell(val position: Position, val value: Char) {
-    var n: Cell? = null
-    var s: Cell? = null
-    var e: Cell? = null
-    var w: Cell? = null
-    var nw: Cell? = null
-    var ne: Cell? = null
-    var sw: Cell? = null
-    var se: Cell? = null
+/**
+ * Class represents grid's cell
+ *
+ * @param position cell position, (x,y) coordinates
+ * @param value cell value represented as single character
+ */
+abstract class Cell<T : Cell<T>>(val position: Position, val value: Char) {
+    var n: T? = null
+    var s: T? = null
+    var e: T? = null
+    var w: T? = null
+    var nw: T? = null
+    var ne: T? = null
+    var sw: T? = null
+    var se: T? = null
 
     var canGoN = false
     var canGoNW = false
@@ -20,6 +26,11 @@ abstract class Cell(val position: Position, val value: Char) {
     var canGoW = false
 
     /**
+     * Gets parent grid
+     */
+    lateinit var grid : Grid<T>
+
+    /**
      * Return N, E, S, W neighbours.
      */
     fun neighbours() = listOfNotNull(n, e, s, w)
@@ -27,12 +38,12 @@ abstract class Cell(val position: Position, val value: Char) {
     /**
      * Returns the Manhattan distance between this cell and the other one
      */
-    fun distanceTo(other: Cell): Long = this.position.distanceTo(other.position)
+    fun distanceTo(other: Cell<T>): Long = this.position.distanceTo(other.position)
 
     /**
-     * Find direction from current cell of given neighbour.
+     * Find direction from current cell its neighbour.
      */
-    fun findNeighbourDirection(neighbour: Cell): Direction {
+    fun findNeighbourDirection(neighbour: Cell<T>): Direction {
         return when {
             n === neighbour -> Direction.Up
             s === neighbour -> Direction.Down
@@ -43,12 +54,18 @@ abstract class Cell(val position: Position, val value: Char) {
     }
 
     /**
-     * Return N, NE, E, SE, S, SW, W, NW neighbours.
+     * Returns N, NE, E, SE, S, SW, W, NW neighbours.
      */
     fun neighboursAll() = listOfNotNull(n, ne, e, se, s, sw, w, nw)
 }
 
-class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
+/**
+ * Class represents rectangular grid with cells, where top left corner coordinates are (0,0)
+ *
+ * @param builder builder used to create grid
+ * @param cellFactory method to create cell object
+ */
+class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
     constructor(input: String, cellFactory: (Char, Position) -> T) :
             this(input.lines().let {
                 val lines = input.lines().map { it.toList() }
@@ -57,8 +74,8 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
                 Builder(xRange, yRange) { position -> lines[position.y][position.x] }
             }, cellFactory)
 
-    val cells: Map<Position, T> = buildCells(builder, cellFactory)
-    val values = cells.values
+    private val cellMap: Map<Position, T> = buildCells(builder, cellFactory)
+    val cells = cellMap.values
     var height = builder.yRange.length()
     var width = builder.xRange.length()
 
@@ -76,8 +93,10 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
         for (y in builder.yRange) {
             for (x in builder.xRange) {
                 val position = Position(x, y)
-                val name = builder.charOnPosition(position)
-                tempCells[position] = cellFactory(name, position)
+                val name = builder.valueOnPosition(position)
+                val cell = cellFactory(name, position)
+                cell.grid = this
+                tempCells[position] = cell
             }
         }
 
@@ -107,22 +126,29 @@ class Grid<T : Cell>(builder: Builder, cellFactory: (Char, Position) -> T) {
      * Returns the cell at the given string position (e.g. "0,0").
      */
     fun getCell(position: String): T? {
-        return cells[Position.fromString(position)]
+        return cellMap[Position.fromString(position)]
     }
 
     /**
      * Returns the cell at the given (x,y) position.
      */
     fun getCell(x: Int, y: Int): T? {
-        return cells[Position(x, y)]
+        return cellMap[Position(x, y)]
     }
 
     /**
      * Returns the cell at the given position.
      */
     fun getCell(position: Position): T? {
-        return cells[position]
+        return cellMap[position]
     }
 
-    class Builder(val xRange: IntRange, val yRange: IntRange, val charOnPosition: (position: Position) -> Char)
+    /**
+     * Grid builder class
+     *
+     * @param xRange range used as width  (0 ... width)
+     * @param yRange range used as height (0 ... height)
+     * @param valueOnPosition cell value on given (x,y) position
+     */
+    class Builder(val xRange: IntRange, val yRange: IntRange, val valueOnPosition: (position: Position) -> Char)
 }

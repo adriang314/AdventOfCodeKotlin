@@ -9,11 +9,11 @@ class SolutionDay16 : BaseSolution() {
 
     override val day = 16
 
-    private val map = Grid(input()) { c, position -> Place(position, c) }
+    private val map = Grid(input()) { c, position -> Point(position, c) }
         .also { grid ->
-            grid.cells.values.forEach {
-                if (it.isStartPoint()) startPlace = it
-                if (it.isEndPoint()) endPlace = it
+            grid.cells.forEach {
+                if (it.isStartPoint()) startPoint = it
+                if (it.isEndPoint()) endPoint = it
 
                 it.canGoN = grid.getCell(it.position.n())?.isSpace() == true
                 it.canGoS = grid.getCell(it.position.s())?.isSpace() == true
@@ -22,8 +22,8 @@ class SolutionDay16 : BaseSolution() {
             }
         }
 
-    private lateinit var startPlace: Place
-    private lateinit var endPlace: Place
+    private lateinit var startPoint: Point
+    private lateinit var endPoint: Point
     private var bestPaths = LinkedList<Path>()
 
     init {
@@ -32,13 +32,13 @@ class SolutionDay16 : BaseSolution() {
 
     private fun findBestPaths() {
         val pathsToCheck = LinkedList<Path>()
-        pathsToCheck.add(Path(startPlace, setOf(startPlace.position), 0L, Direction.Right))
+        pathsToCheck.add(Path(startPoint, setOf(startPoint.position), 0L, Direction.Right))
 
         val bestScores = mutableMapOf<DirectedPosition, Long>()
         while (pathsToCheck.isNotEmpty()) {
             val currPath = pathsToCheck.pop()
 
-            if (currPath.currentPlace === endPlace) {
+            if (currPath.currentPoint === endPoint) {
                 if (bestPaths.isEmpty())
                     bestPaths.add(currPath)
                 else {
@@ -50,11 +50,11 @@ class SolutionDay16 : BaseSolution() {
                     }
                 }
             } else {
-                currPath.currentPlace.neighbours()
+                currPath.currentPoint.neighbours()
                     .map { map.getCell(it.position)!! }
                     .filter { neighbour -> !neighbour.isWall() && !currPath.visitedPositions.contains(neighbour.position) }
                     .forEach { neighbour ->
-                        val neighbourDirection = currPath.currentPlace.findNeighbourDirection(neighbour)
+                        val neighbourDirection = currPath.currentPoint.findNeighbourDirection(neighbour)
                         val newScore = currPath.score + (1000 * currPath.direction.turnsTo(neighbourDirection)) + 1
 
                         // new path worth to check
@@ -86,13 +86,13 @@ class SolutionDay16 : BaseSolution() {
     }
 
     private class Path(
-        val currentPlace: Place,
+        val currentPoint: Point,
         val visitedPositions: Set<Position>,
         val score: Long,
         val direction: Direction
     )
 
-    private class Place(position: Position, c: Char) : Cell(position, c) {
+    private class Point(position: Position, c: Char) : Cell<Point>(position, c) {
         fun isStartPoint() = value == 'S'
         fun isEndPoint() = value == 'E'
         fun isWall() = value == '#'

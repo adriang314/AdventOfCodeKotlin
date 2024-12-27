@@ -12,8 +12,8 @@ class SolutionDay04 : BaseSolution() {
     override val day = 4
 
     private val grid = Grid(input()) { c, position -> Letter(position, c) }
-    private val xLetters = grid.cells.filterValues { it.value == 'X' }.map { it.value }
-    private val aLetters = grid.cells.filterValues { it.value == 'A' }.map { it.value }
+    private val xLetters = grid.cells.filter { it.value == 'X' }
+    private val aLetters = grid.cells.filter { it.value == 'A' }
 
     override fun task1(): String {
         val result = xLetters.sumOf { it.xmas1Count() }
@@ -25,7 +25,7 @@ class SolutionDay04 : BaseSolution() {
         return result.toString()
     }
 
-    private class Letter(pos: Position, c: Char) : Cell(pos, c) {
+    private class Letter(pos: Position, c: Char) : Cell<Letter>(pos, c) {
 
         fun xmas1Count(): Int {
             if (value != 'X')

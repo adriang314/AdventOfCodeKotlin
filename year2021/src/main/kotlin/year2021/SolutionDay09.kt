@@ -9,12 +9,12 @@ class SolutionDay09 : BaseSolution() {
     override val day = 9
 
     override fun task1(): String {
-        val riskLevel = map.values.filter { it.isLowPoint }.sumOf { it.height + 1 }
+        val riskLevel = map.cells.filter { it.isLowPoint }.sumOf { it.height + 1 }
         return riskLevel.toString()
     }
 
     override fun task2(): String {
-        val result = map.values
+        val result = map.cells
             .groupBy { it.basinNumber }
             .asSequence()
             .filter { it.key != null }
@@ -28,7 +28,7 @@ class SolutionDay09 : BaseSolution() {
     private var map = Grid(input()) { value, position -> Point(position, value) }
 
     init {
-        map.values.forEach { point ->
+        map.cells.forEach { point ->
             point.isLowPoint = point.neighbours().all { it.value > point.value }
             point.isTopPoint = point.height == 9
         }
@@ -36,12 +36,12 @@ class SolutionDay09 : BaseSolution() {
         // mark basins
         var basinNumber = 1
         do {
-            val basinPoint = map.values.firstOrNull { it.basinNumber == null && !it.isTopPoint }
+            val basinPoint = map.cells.firstOrNull { it.basinNumber == null && !it.isTopPoint }
             basinPoint?.markBasin(basinNumber++)
         } while (basinPoint != null)
     }
 
-    private class Point(position: Position, value: Char) : Cell(position, value) {
+    private class Point(position: Position, value: Char) : Cell<Point>(position, value) {
         val height = value.digitToInt()
         var isLowPoint: Boolean = false
         var basinNumber: Int? = null
@@ -52,7 +52,7 @@ class SolutionDay09 : BaseSolution() {
                 return
 
             this.basinNumber = basinNumber
-            neighbours().forEach { (it as Point).markBasin(basinNumber) }
+            neighbours().forEach { it.markBasin(basinNumber) }
         }
     }
 }

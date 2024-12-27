@@ -33,16 +33,16 @@ class SolutionDay08 : BaseSolution() {
 
             for (y in 0..<height) {
                 for (x in 0..<width) {
-                    val distW = visibleDistance(point(x, y)) { it.w as TreePoint? }
-                    val distE = visibleDistance(point(x, y)) { it.e as TreePoint? }
-                    val distN = visibleDistance(point(x, y)) { it.n as TreePoint? }
-                    val distS = visibleDistance(point(x, y)) { it.s as TreePoint? }
+                    val distW = visibleDistance(point(x, y)) { it.w }
+                    val distE = visibleDistance(point(x, y)) { it.e }
+                    val distN = visibleDistance(point(x, y)) { it.n }
+                    val distS = visibleDistance(point(x, y)) { it.s }
                     point(x, y).visibleDistance = VisibleDistance(distW, distE, distN, distS)
                 }
             }
         }
 
-        fun points() = map.values
+        fun points() = map.cells
 
         private fun point(x: Int, y: Int) = map.getCell(x, y)!!
 
@@ -82,7 +82,7 @@ class SolutionDay08 : BaseSolution() {
     }
 
 
-    private class TreePoint(position: Position, value: Char) : Cell(position, value) {
+    private class TreePoint(position: Position, value: Char) : Cell<TreePoint>(position, value) {
         val height = value.digitToInt()
 
         var visibleFromW = false

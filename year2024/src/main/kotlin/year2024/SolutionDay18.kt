@@ -39,7 +39,7 @@ class SolutionDay18 : BaseSolution() {
         }
 
         Grid(gridBuilder) { c, position -> Point(position, c) }.also { grid ->
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.position == Position(0, 0)) startPoint = it
                 if (it.position == Position(mapSize, mapSize)) endPoint = it
 
@@ -51,7 +51,7 @@ class SolutionDay18 : BaseSolution() {
                 graph.addVertex(it.position.toString())
             }
 
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.canGoN) graph.addEdge(it.position, it.position.n())
                 if (it.canGoS) graph.addEdge(it.position, it.position.s())
                 if (it.canGoW) graph.addEdge(it.position, it.position.w())
@@ -63,5 +63,5 @@ class SolutionDay18 : BaseSolution() {
         return algorithm.getPath(startPoint.position, endPoint.position)?.length
     }
 
-    private class Point(position: Position, c: Char) : Cell(position, c)
+    private class Point(position: Position, c: Char) : Cell<Point>(position, c)
 }

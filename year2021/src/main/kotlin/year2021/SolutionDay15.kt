@@ -36,8 +36,8 @@ class SolutionDay15 : BaseSolution() {
         val pointMap = Grid(input()) { c, position -> Point(position, c) }
         val extendedPointMap = Grid(extendInput(input())) { c, position -> Point(position, c) }
 
-        points = pointMap.values.toList()
-        extPoints = extendedPointMap.values.toList()
+        points = pointMap.cells.toList()
+        extPoints = extendedPointMap.cells.toList()
 
         addVertices(
             graph, points, pointMap,
@@ -96,24 +96,24 @@ class SolutionDay15 : BaseSolution() {
             val position = point.position
             point.w?.let {
                 graph.addEdge(position, position.w())
-                graph.setEdgeWeight(position, position.w(), (it as Point).riskLvl)
+                graph.setEdgeWeight(position, position.w(), it.riskLvl)
             }
             point.e?.let {
                 graph.addEdge(position, position.e())
-                graph.setEdgeWeight(position, position.e(), (it as Point).riskLvl)
+                graph.setEdgeWeight(position, position.e(), it.riskLvl)
             }
             point.n?.let {
                 graph.addEdge(position, position.n())
-                graph.setEdgeWeight(position, position.n(), (it as Point).riskLvl)
+                graph.setEdgeWeight(position, position.n(), it.riskLvl)
             }
             point.s?.let {
                 graph.addEdge(position, position.s())
-                graph.setEdgeWeight(position, position.s(), (it as Point).riskLvl)
+                graph.setEdgeWeight(position, position.s(), it.riskLvl)
             }
         }
     }
 
-    private class Point(position: Position, value: Char) : Cell(position, value) {
+    private class Point(position: Position, value: Char) : Cell<Point>(position, value) {
         val riskLvl = value.digitToInt().toDouble()
     }
 }

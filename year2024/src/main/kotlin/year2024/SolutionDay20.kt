@@ -23,7 +23,7 @@ class SolutionDay20 : BaseSolution() {
 
     init {
         map = Grid(input()) { c, position -> Point(position, c) }.also { grid ->
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.value == 'S') startPoint = it
                 if (it.value == 'E') endPoint = it
 
@@ -35,7 +35,7 @@ class SolutionDay20 : BaseSolution() {
                 graph.addVertex(it.position.toString())
             }
 
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.canGoN) graph.addEdge(it.position, it.position.n())
                 if (it.canGoS) graph.addEdge(it.position, it.position.s())
                 if (it.canGoW) graph.addEdge(it.position, it.position.w())
@@ -102,7 +102,7 @@ class SolutionDay20 : BaseSolution() {
         return result
     }
 
-    private class Point(position: Position, c: Char) : Cell(position, c) {
+    private class Point(position: Position, c: Char) : Cell<Point>(position, c) {
         fun isOpenSpace() = value != '#'
     }
 }

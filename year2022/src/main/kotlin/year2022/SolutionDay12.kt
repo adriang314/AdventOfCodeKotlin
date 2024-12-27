@@ -18,7 +18,7 @@ class SolutionDay12 : BaseSolution() {
 
     override fun task2(): String {
         val algorithm = BidirectionalDijkstraShortestPath(graph)
-        val startPoints = map.cells.values.filter { it.height == 'a'.code }
+        val startPoints = map.cells.filter { it.height == 'a'.code }
         val shortestPath =
             startPoints.mapNotNull { algorithm.getPath(it.position, endPoint.position) }.minBy { it.length }
         return shortestPath.length.toString()
@@ -31,7 +31,7 @@ class SolutionDay12 : BaseSolution() {
 
     init {
         map = Grid(input()) { value, position -> Point(position, value) }.also { grid ->
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.value == 'S') startPoint = it
                 if (it.value == 'E') endPoint = it
 
@@ -43,7 +43,7 @@ class SolutionDay12 : BaseSolution() {
                 graph.addVertex(it.position)
             }
 
-            grid.cells.values.forEach {
+            grid.cells.forEach {
                 if (it.canGoN) graph.addEdge(it.position, it.position.n())
                 if (it.canGoS) graph.addEdge(it.position, it.position.s())
                 if (it.canGoW) graph.addEdge(it.position, it.position.w())
@@ -52,7 +52,7 @@ class SolutionDay12 : BaseSolution() {
         }
     }
 
-    private class Point(position: Position, value: Char) : Cell(position, value) {
+    private class Point(position: Position, value: Char) : Cell<Point>(position, value) {
         val height: Int = when (value) {
             'S' -> 'a'.code
             'E' -> 'z'.code

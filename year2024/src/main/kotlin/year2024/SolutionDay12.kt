@@ -8,9 +8,9 @@ class SolutionDay12 : BaseSolution() {
 
     override val day = 12
 
-    private val garden: Grid<GardenCell> = Grid(input()) { c, position -> GardenCell(position, c) }
+    private val garden: Grid<GardenPoint> = Grid(input()) { c, position -> GardenPoint(position, c) }
         .also { garden ->
-            garden.cells.values.forEach {
+            garden.cells.forEach {
                 it.canGoN = it.n?.value == it.value
                 it.canGoS = it.s?.value == it.value
                 it.canGoW = it.w?.value == it.value
@@ -21,7 +21,7 @@ class SolutionDay12 : BaseSolution() {
 
     init {
         val tmpRegions = mutableListOf<Region>()
-        val gardenCells = garden.cells.values.toMutableList()
+        val gardenCells = garden.cells.toMutableList()
 
         while (gardenCells.isNotEmpty()) {
             val gardenCell = gardenCells.first()
@@ -45,8 +45,8 @@ class SolutionDay12 : BaseSolution() {
         return result.toString()
     }
 
-    private class Region(innerGardenCell: GardenCell) {
-        private val gardenCells = mutableMapOf<Position, GardenCell>()
+    private class Region(innerGardenPoint: GardenPoint) {
+        private val gardenCells = mutableMapOf<Position, GardenPoint>()
         private val fences = mutableSetOf<Fence>()
         private var requiredFence = 0
         private var totalSides = 0
@@ -60,7 +60,7 @@ class SolutionDay12 : BaseSolution() {
         fun gardenCells() = gardenCells.values
 
         init {
-            createRegion(innerGardenCell)
+            createRegion(innerGardenPoint)
             calculateSides()
         }
 
@@ -93,36 +93,36 @@ class SolutionDay12 : BaseSolution() {
             }
         }
 
-        private fun createRegion(gardenCell: GardenCell) {
-            if (gardenCells.containsKey(gardenCell.position))
+        private fun createRegion(gardenPoint: GardenPoint) {
+            if (gardenCells.containsKey(gardenPoint.position))
                 return
 
             var directions = 4
-            if (gardenCell.canGoN) directions--
-            if (gardenCell.canGoS) directions--
-            if (gardenCell.canGoE) directions--
-            if (gardenCell.canGoW) directions--
+            if (gardenPoint.canGoN) directions--
+            if (gardenPoint.canGoS) directions--
+            if (gardenPoint.canGoE) directions--
+            if (gardenPoint.canGoW) directions--
 
-            if (!gardenCell.canGoN) fences.add(Fence(gardenCell.position, Side.Up))
-            if (!gardenCell.canGoS) fences.add(Fence(gardenCell.position, Side.Down))
-            if (!gardenCell.canGoE) fences.add(Fence(gardenCell.position, Side.Left))
-            if (!gardenCell.canGoW) fences.add(Fence(gardenCell.position, Side.Right))
+            if (!gardenPoint.canGoN) fences.add(Fence(gardenPoint.position, Side.Up))
+            if (!gardenPoint.canGoS) fences.add(Fence(gardenPoint.position, Side.Down))
+            if (!gardenPoint.canGoE) fences.add(Fence(gardenPoint.position, Side.Left))
+            if (!gardenPoint.canGoW) fences.add(Fence(gardenPoint.position, Side.Right))
 
             requiredFence += directions
 
-            gardenCells[gardenCell.position] = gardenCell
+            gardenCells[gardenPoint.position] = gardenPoint
 
-            if (gardenCell.canGoN && !gardenCells.containsKey(gardenCell.n!!.position))
-                createRegion(gardenCell.n as GardenCell)
+            if (gardenPoint.canGoN && !gardenCells.containsKey(gardenPoint.n!!.position))
+                createRegion(gardenPoint.n!!)
 
-            if (gardenCell.canGoS && !gardenCells.containsKey(gardenCell.s!!.position))
-                createRegion(gardenCell.s as GardenCell)
+            if (gardenPoint.canGoS && !gardenCells.containsKey(gardenPoint.s!!.position))
+                createRegion(gardenPoint.s!!)
 
-            if (gardenCell.canGoW && !gardenCells.containsKey(gardenCell.w!!.position))
-                createRegion(gardenCell.w as GardenCell)
+            if (gardenPoint.canGoW && !gardenCells.containsKey(gardenPoint.w!!.position))
+                createRegion(gardenPoint.w!!)
 
-            if (gardenCell.canGoE && !gardenCells.containsKey(gardenCell.e!!.position))
-                createRegion(gardenCell.e as GardenCell)
+            if (gardenPoint.canGoE && !gardenCells.containsKey(gardenPoint.e!!.position))
+                createRegion(gardenPoint.e!!)
         }
     }
 
@@ -130,5 +130,5 @@ class SolutionDay12 : BaseSolution() {
 
     private enum class Side { Up, Down, Left, Right }
 
-    private class GardenCell(position: Position, c: Char) : Cell(position, c)
+    private class GardenPoint(position: Position, c: Char) : Cell<GardenPoint>(position, c)
 }
