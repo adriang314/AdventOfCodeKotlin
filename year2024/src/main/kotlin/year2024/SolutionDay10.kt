@@ -8,14 +8,8 @@ class SolutionDay10 : BaseSolution() {
 
     override val day = 10
 
-    private val hills = Grid(input()) { c, position -> Hill(position, c) }.also { grid ->
-        grid.cells.forEach {
-            it.canGoN = it.n?.height == it.height + 1
-            it.canGoS = it.s?.height == it.height + 1
-            it.canGoW = it.w?.height == it.height + 1
-            it.canGoE = it.e?.height == it.height + 1
-        }
-    }
+    private val hills = Grid(input()) { c, position -> Hill(position, c) }
+
     private val zeroHills: List<Hill> = hills.cells.filter { it.height == 0 }
 
     override fun task1(): String {
@@ -33,10 +27,10 @@ class SolutionDay10 : BaseSolution() {
             return setOf(hill)
 
         val result = mutableSetOf<Hill>()
-        if (hill.canGoN) result.addAll(go1(hill.n!!))
-        if (hill.canGoS) result.addAll(go1(hill.s!!))
-        if (hill.canGoW) result.addAll(go1(hill.w!!))
-        if (hill.canGoE) result.addAll(go1(hill.e!!))
+        if (hill.canGoN()) result.addAll(go1(hill.n!!))
+        if (hill.canGoS()) result.addAll(go1(hill.s!!))
+        if (hill.canGoW()) result.addAll(go1(hill.w!!))
+        if (hill.canGoE()) result.addAll(go1(hill.e!!))
 
         return result
     }
@@ -46,10 +40,10 @@ class SolutionDay10 : BaseSolution() {
             return 1
 
         var result = 0
-        if (hill.canGoN) result += go2(hill.n!!)
-        if (hill.canGoS) result += go2(hill.s!!)
-        if (hill.canGoW) result += go2(hill.w!!)
-        if (hill.canGoE) result += go2(hill.e!!)
+        if (hill.canGoN()) result += go2(hill.n!!)
+        if (hill.canGoS()) result += go2(hill.s!!)
+        if (hill.canGoW()) result += go2(hill.w!!)
+        if (hill.canGoE()) result += go2(hill.e!!)
 
         return result
     }
@@ -57,5 +51,10 @@ class SolutionDay10 : BaseSolution() {
     private class Hill(position: Position, c: Char) : Cell<Hill>(position, c) {
         val height = c.digitToInt()
         val isHighest = height == 9
+
+        override fun canGoN() = n?.height == height + 1
+        override fun canGoS() = s?.height == height + 1
+        override fun canGoW() = w?.height == height + 1
+        override fun canGoE() = e?.height == height + 1
     }
 }

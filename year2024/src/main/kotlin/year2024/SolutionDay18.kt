@@ -43,19 +43,14 @@ class SolutionDay18 : BaseSolution() {
                 if (it.position == Position(0, 0)) startPoint = it
                 if (it.position == Position(mapSize, mapSize)) endPoint = it
 
-                it.canGoN = it.n?.value == '.'
-                it.canGoS = it.s?.value == '.'
-                it.canGoW = it.w?.value == '.'
-                it.canGoE = it.e?.value == '.'
-
                 graph.addVertex(it.position.toString())
             }
 
             grid.cells.forEach {
-                if (it.canGoN) graph.addEdge(it.position, it.position.n())
-                if (it.canGoS) graph.addEdge(it.position, it.position.s())
-                if (it.canGoW) graph.addEdge(it.position, it.position.w())
-                if (it.canGoE) graph.addEdge(it.position, it.position.e())
+                if (it.canGoN()) graph.addEdge(it.position, it.position.n())
+                if (it.canGoS()) graph.addEdge(it.position, it.position.s())
+                if (it.canGoW()) graph.addEdge(it.position, it.position.w())
+                if (it.canGoE()) graph.addEdge(it.position, it.position.e())
             }
         }
 
@@ -63,5 +58,10 @@ class SolutionDay18 : BaseSolution() {
         return algorithm.getPath(startPoint.position, endPoint.position)?.length
     }
 
-    private class Point(position: Position, c: Char) : Cell<Point>(position, c)
+    private class Point(position: Position, c: Char) : Cell<Point>(position, c) {
+        override fun canGoN() = n?.value == '.'
+        override fun canGoS() = s?.value == '.'
+        override fun canGoW() = w?.value == '.'
+        override fun canGoE() = e?.value == '.'
+    }
 }

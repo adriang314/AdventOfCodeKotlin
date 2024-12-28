@@ -10,20 +10,8 @@ class SolutionDay16 : BaseSolution() {
     override val day = 16
 
     private val map = Grid(input()) { c, position -> Point(position, c) }
-        .also { grid ->
-            grid.cells.forEach {
-                if (it.isStartPoint()) startPoint = it
-                if (it.isEndPoint()) endPoint = it
-
-                it.canGoN = grid.getCell(it.position.n())?.isSpace() == true
-                it.canGoS = grid.getCell(it.position.s())?.isSpace() == true
-                it.canGoW = grid.getCell(it.position.w())?.isSpace() == true
-                it.canGoE = grid.getCell(it.position.e())?.isSpace() == true
-            }
-        }
-
-    private lateinit var startPoint: Point
-    private lateinit var endPoint: Point
+    private val startPoint = map.cells.single { it.isStartPoint() }
+    private val endPoint = map.cells.single { it.isEndPoint() }
     private var bestPaths = LinkedList<Path>()
 
     init {
@@ -32,7 +20,7 @@ class SolutionDay16 : BaseSolution() {
 
     private fun findBestPaths() {
         val pathsToCheck = LinkedList<Path>()
-        pathsToCheck.add(Path(startPoint, setOf(startPoint.position), 0L, Direction.Right))
+        pathsToCheck.add(Path(startPoint, setOf(startPoint.position), 0L, Direction.E))
 
         val bestScores = mutableMapOf<DirectedPosition, Long>()
         while (pathsToCheck.isNotEmpty()) {
@@ -97,5 +85,10 @@ class SolutionDay16 : BaseSolution() {
         fun isEndPoint() = value == 'E'
         fun isWall() = value == '#'
         fun isSpace() = !isWall()
+
+        override fun canGoN() = n?.isSpace() == true
+        override fun canGoS() = s?.isSpace() == true
+        override fun canGoW() = w?.isSpace() == true
+        override fun canGoE() = e?.isSpace() == true
     }
 }

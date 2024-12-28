@@ -17,12 +17,7 @@ import kotlin.math.absoluteValue
  * @param x The x coordinate. Length from the left edge of the grid.
  * @param y The y coordinate. Length from the top edge of the grid.
  */
-data class Position(val x: Int, val y: Int) {
-    fun up() = n()
-    fun down() = s()
-    fun left() = w()
-    fun right() = e()
-
+data class Position(val x: Int, val y: Int) : Comparable<Position> {
     fun n() = Position(x, y - 1)
     fun s() = Position(x, y + 1)
     fun e() = Position(x + 1, y)
@@ -35,10 +30,10 @@ data class Position(val x: Int, val y: Int) {
     fun shift(xShift: Int, yShift: Int) = Position(x + xShift, y + yShift)
 
     fun next(direction: Direction) = when (direction) {
-        Direction.Up -> up()
-        Direction.Down -> down()
-        Direction.Left -> left()
-        Direction.Right -> right()
+        Direction.N -> n()
+        Direction.S -> s()
+        Direction.W -> w()
+        Direction.E -> e()
     }
 
     /**
@@ -46,6 +41,27 @@ data class Position(val x: Int, val y: Int) {
      */
     fun distanceTo(other: Position): Long {
         return (this.x - other.x).absoluteValue + (this.y - other.y).absoluteValue.toLong()
+    }
+
+    /**
+     * Comparison based on top -> bottom, left -> right rule.
+     * Top left corner position (0,0) is the smallest one.
+     * Bottom right corner (x,y) is the largest one.
+     *
+     *  ###################   *----X--->
+     *  #(0,0) (1,0) (2,0)#   |
+     *  #(0,1) (1,1) (2,1)#   Y
+     *  #(0,2) (1,2) (2,2)#   |
+     *  ###################   v
+     *
+     * (0,0) < (1,0) < (0,1) < (1,1)
+     */
+    override fun compareTo(other: Position): Int {
+        val yComparison = y.compareTo(other.y)
+        if (yComparison != 0)
+            return yComparison
+        val xComparison = x.compareTo(other.x)
+        return xComparison
     }
 
     override fun toString() = "$x,$y"
@@ -64,25 +80,25 @@ data class DirectedPosition(
 )
 
 enum class Direction {
-    Left, Right, Up, Down;
+    W, E, N, S;
 
     fun turnsTo(direction: Direction): Int {
         if (direction == this)
             return 0
         return when (direction) {
-            Left -> if (this == Right) 2 else 1
-            Right -> if (this == Left) 2 else 1
-            Up -> if (this == Down) 2 else 1
-            Down -> if (this == Up) 2 else 1
+            W -> if (this == E) 2 else 1
+            E -> if (this == W) 2 else 1
+            N -> if (this == S) 2 else 1
+            S -> if (this == N) 2 else 1
         }
     }
 
     companion object {
         fun from(c: Char) = when (c) {
-            '>', 'E' -> Right
-            '<', 'W' -> Left
-            '^', 'N' -> Up
-            'v', 'S' -> Down
+            '>', 'E', 'e' -> E
+            '<', 'W', 'w' -> W
+            '^', 'N', 'n' -> N
+            'v', 'S', 's' -> S
             else -> throw RuntimeException("Unknown direction")
         }
     }

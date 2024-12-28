@@ -13,34 +13,24 @@ class SolutionDay20 : BaseSolution() {
 
     override val day = 20
 
-    private val map: Grid<Point>
-    private lateinit var startPoint: Point
-    private lateinit var endPoint: Point
+    private val map = Grid(input()) { value, position -> Point(position, value) }
+    private val startPoint = map.cells.single { it.value == 'S' }
+    private val endPoint = map.cells.single { it.value == 'E' }
     private val graph = SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge::class.java)
     private val algorithm: BidirectionalDijkstraShortestPath<String, DefaultEdge>
     private val pathPlaces: Map<Point, Int> // value = length from start point
     private val pathLength: Int
 
     init {
-        map = Grid(input()) { c, position -> Point(position, c) }.also { grid ->
-            grid.cells.forEach {
-                if (it.value == 'S') startPoint = it
-                if (it.value == 'E') endPoint = it
+        map.cells.forEach {
+            graph.addVertex(it.position.toString())
+        }
 
-                it.canGoN = it.isOpenSpace() && grid.getCell(it.position.n())?.isOpenSpace() ?: false
-                it.canGoS = it.isOpenSpace() && grid.getCell(it.position.s())?.isOpenSpace() ?: false
-                it.canGoW = it.isOpenSpace() && grid.getCell(it.position.w())?.isOpenSpace() ?: false
-                it.canGoE = it.isOpenSpace() && grid.getCell(it.position.e())?.isOpenSpace() ?: false
-
-                graph.addVertex(it.position.toString())
-            }
-
-            grid.cells.forEach {
-                if (it.canGoN) graph.addEdge(it.position, it.position.n())
-                if (it.canGoS) graph.addEdge(it.position, it.position.s())
-                if (it.canGoW) graph.addEdge(it.position, it.position.w())
-                if (it.canGoE) graph.addEdge(it.position, it.position.e())
-            }
+        map.cells.forEach {
+            if (it.canGoN()) graph.addEdge(it.position, it.position.n())
+            if (it.canGoS()) graph.addEdge(it.position, it.position.s())
+            if (it.canGoW()) graph.addEdge(it.position, it.position.w())
+            if (it.canGoE()) graph.addEdge(it.position, it.position.e())
         }
 
         algorithm = BidirectionalDijkstraShortestPath(graph)
@@ -102,7 +92,12 @@ class SolutionDay20 : BaseSolution() {
         return result
     }
 
-    private class Point(position: Position, c: Char) : Cell<Point>(position, c) {
+    private class Point(position: Position, value: Char) : Cell<Point>(position, value) {
         fun isOpenSpace() = value != '#'
+
+        override fun canGoN() = isOpenSpace() && (n?.isOpenSpace() ?: false)
+        override fun canGoS() = isOpenSpace() && (s?.isOpenSpace() ?: false)
+        override fun canGoW() = isOpenSpace() && (w?.isOpenSpace() ?: false)
+        override fun canGoE() = isOpenSpace() && (e?.isOpenSpace() ?: false)
     }
 }

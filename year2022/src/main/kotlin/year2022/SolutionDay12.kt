@@ -35,19 +35,14 @@ class SolutionDay12 : BaseSolution() {
                 if (it.value == 'S') startPoint = it
                 if (it.value == 'E') endPoint = it
 
-                it.canGoN = (grid.getCell(it.position.n())?.height ?: Int.MAX_VALUE) <= it.height + 1
-                it.canGoS = (grid.getCell(it.position.s())?.height ?: Int.MAX_VALUE) <= it.height + 1
-                it.canGoW = (grid.getCell(it.position.w())?.height ?: Int.MAX_VALUE) <= it.height + 1
-                it.canGoE = (grid.getCell(it.position.e())?.height ?: Int.MAX_VALUE) <= it.height + 1
-
                 graph.addVertex(it.position)
             }
 
             grid.cells.forEach {
-                if (it.canGoN) graph.addEdge(it.position, it.position.n())
-                if (it.canGoS) graph.addEdge(it.position, it.position.s())
-                if (it.canGoW) graph.addEdge(it.position, it.position.w())
-                if (it.canGoE) graph.addEdge(it.position, it.position.e())
+                if (it.canGoN()) graph.addEdge(it.position, it.position.n())
+                if (it.canGoS()) graph.addEdge(it.position, it.position.s())
+                if (it.canGoW()) graph.addEdge(it.position, it.position.w())
+                if (it.canGoE()) graph.addEdge(it.position, it.position.e())
             }
         }
     }
@@ -58,5 +53,10 @@ class SolutionDay12 : BaseSolution() {
             'E' -> 'z'.code
             else -> value.code
         }
+
+        override fun canGoN() = (n?.height ?: Int.MAX_VALUE) <= height + 1
+        override fun canGoS() = (s?.height ?: Int.MAX_VALUE) <= height + 1
+        override fun canGoW() = (w?.height ?: Int.MAX_VALUE) <= height + 1
+        override fun canGoE() = (e?.height ?: Int.MAX_VALUE) <= height + 1
     }
 }

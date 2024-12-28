@@ -145,8 +145,8 @@ class SolutionDay15 : BaseSolution() {
             return true
         }
 
-        val boxLPosition = if (fromObjectType == ObjectType.BoxLeft) from else from.left()
-        val boxRPosition = if (fromObjectType == ObjectType.BoxRight) from else from.right()
+        val boxLPosition = if (fromObjectType == ObjectType.BoxLeft) from else from.w()
+        val boxRPosition = if (fromObjectType == ObjectType.BoxRight) from else from.e()
 
         val boxLNextPosition = boxLPosition.next(direction)
         val boxRNextPosition = boxRPosition.next(direction)
@@ -160,22 +160,22 @@ class SolutionDay15 : BaseSolution() {
         }
 
         // moving to left or right requires only one free space
-        if ((direction == Direction.Left || direction == Direction.Right) &&
+        if ((direction == Direction.W || direction == Direction.E) &&
             (boxLNextPositionType == ObjectType.Space || boxRNextPositionType == ObjectType.Space)
         ) {
             return true
         }
 
         // moving up or down requires two empty spaces
-        if ((direction == Direction.Up || direction == Direction.Down) &&
+        if ((direction == Direction.N || direction == Direction.S) &&
             (boxLNextPositionType == ObjectType.Space && boxRNextPositionType == ObjectType.Space)
         ) {
             return true
         }
 
         return when (direction) {
-            Direction.Left -> canMoveDoubleBox(boxLNextPosition, direction)
-            Direction.Right -> canMoveDoubleBox(boxRNextPosition, direction)
+            Direction.W -> canMoveDoubleBox(boxLNextPosition, direction)
+            Direction.E -> canMoveDoubleBox(boxRNextPosition, direction)
             else -> canMoveDoubleBox(boxLNextPosition, direction) && canMoveDoubleBox(boxRNextPosition, direction)
         }
     }
@@ -186,8 +186,8 @@ class SolutionDay15 : BaseSolution() {
             return
         }
 
-        val boxLPosition = if (fromObjectType == ObjectType.BoxLeft) from else from.left()
-        val boxRPosition = if (fromObjectType == ObjectType.BoxRight) from else from.right()
+        val boxLPosition = if (fromObjectType == ObjectType.BoxLeft) from else from.w()
+        val boxRPosition = if (fromObjectType == ObjectType.BoxRight) from else from.e()
 
         val boxLNextPosition = boxLPosition.next(direction)
         val boxRNextPosition = boxRPosition.next(direction)
@@ -200,12 +200,12 @@ class SolutionDay15 : BaseSolution() {
             return
 
         // moving to left or right requires only one free space
-        if ((direction == Direction.Right || direction == Direction.Left) &&
+        if ((direction == Direction.E || direction == Direction.W) &&
             (boxLNextPositionType == ObjectType.Space || boxRNextPositionType == ObjectType.Space)
         ) {
             map2[boxLNextPosition] = ObjectType.BoxLeft
             map2[boxRNextPosition] = ObjectType.BoxRight
-            if (direction == Direction.Left) {
+            if (direction == Direction.W) {
                 map2[boxRPosition] = ObjectType.Space
             } else {
                 map2[boxLPosition] = ObjectType.Space
@@ -214,7 +214,7 @@ class SolutionDay15 : BaseSolution() {
         }
 
         // moving up or down requires two empty spaces
-        if ((direction == Direction.Up || direction == Direction.Down) &&
+        if ((direction == Direction.N || direction == Direction.S) &&
             (boxLNextPositionType == ObjectType.Space && boxRNextPositionType == ObjectType.Space)
         ) {
             map2[boxLNextPosition] = ObjectType.BoxLeft
@@ -225,18 +225,18 @@ class SolutionDay15 : BaseSolution() {
         }
 
         when (direction) {
-            Direction.Left -> moveDoubleBox(boxLNextPosition, direction)
-            Direction.Right -> moveDoubleBox(boxRNextPosition, direction)
+            Direction.W -> moveDoubleBox(boxLNextPosition, direction)
+            Direction.E -> moveDoubleBox(boxRNextPosition, direction)
             else -> {
                 moveDoubleBox(boxLNextPosition, direction)
                 moveDoubleBox(boxRNextPosition, direction)
             }
         }
 
-        if (direction == Direction.Right || direction == Direction.Left) {
+        if (direction == Direction.E || direction == Direction.W) {
             map2[boxLNextPosition] = ObjectType.BoxLeft
             map2[boxRNextPosition] = ObjectType.BoxRight
-            if (direction == Direction.Left) {
+            if (direction == Direction.W) {
                 map2[boxRPosition] = ObjectType.Space
             } else {
                 map2[boxLPosition] = ObjectType.Space

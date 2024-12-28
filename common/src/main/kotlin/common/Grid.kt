@@ -1,12 +1,83 @@
 package common
 
+import java.util.*
+
+/**
+ * Class represents a list of cells in grid forming a path
+ */
+class Path<T : Cell<T>>(val cells: List<T>) : Comparable<Path<T>> {
+    init {
+        require(cells.isNotEmpty())
+    }
+
+    /**
+     * Number of connections between cells
+     */
+    val connections = cells.size - 1
+    val start = cells.first()
+    val end = cells.last()
+
+    /**
+     * Checks whether this path contains cell
+     *
+     * @param cell to search in path
+     */
+    fun contains(cell: T) = cells.any { it == cell }
+
+    /**
+     * Add new cell at the end of this path. Returns new path.
+     *
+     * @param cell to add to this path
+     */
+    fun add(cell: T) = Path(cells.plus(cell))
+
+    /**
+     * Creates sub path starting from given cell inside this path.
+     *
+     * @param cell to start sub path from
+     *
+     * @return new path or null if [cell] cannot be found in this path
+     */
+    fun subPath(cell: T): Path<T>? {
+        val cellIdx = cells.indexOf(cell)
+        if (cellIdx == -1)
+            return null
+
+        return Path(cells.subList(cellIdx, cells.size))
+    }
+
+    override fun compareTo(other: Path<T>): Int {
+        if (connections != other.connections || start != other.start || end != other.end)
+            throw RuntimeException("Cannot compare these paths")
+
+        for (idx in cells.indices) {
+            val thisPathCell = cells[idx]
+            val otherPathCell = other.cells[idx]
+
+            val positionComparison = thisPathCell.position.compareTo(otherPathCell.position)
+            if (positionComparison != 0)
+                return positionComparison
+        }
+
+        return 0
+    }
+
+    override fun toString(): String {
+        return "[${cells.joinToString(",") { "(${it.position})" }}]"
+    }
+}
+
 /**
  * Class represents grid's cell
  *
  * @param position cell position, (x,y) coordinates
  * @param value cell value represented as single character
  */
-abstract class Cell<T : Cell<T>>(val position: Position, val value: Char) {
+abstract class Cell<T : Cell<T>>(val position: Position, var value: Char) {
+
+    @Suppress("UNCHECKED_CAST")
+    private fun current() = this as T
+
     var n: T? = null
     var s: T? = null
     var e: T? = null
@@ -16,47 +87,185 @@ abstract class Cell<T : Cell<T>>(val position: Position, val value: Char) {
     var sw: T? = null
     var se: T? = null
 
-    var canGoN = false
-    var canGoNW = false
-    var canGoNE = false
-    var canGoS = false
-    var canGoSW = false
-    var canGoSE = false
-    var canGoE = false
-    var canGoW = false
+    open fun canGoN() = n != null
+    open fun canGoNW() = nw != null
+    open fun canGoNE() = ne != null
+    open fun canGoS() = s != null
+    open fun canGoSW() = sw != null
+    open fun canGoSE() = se != null
+    open fun canGoE() = e != null
+    open fun canGoW() = w != null
 
     /**
      * Gets parent grid
      */
-    lateinit var grid : Grid<T>
+    lateinit var grid: Grid<T>
 
     /**
-     * Return N, E, S, W neighbours.
+     * Return N, E, S, W neighbours filtered by can go function
      */
-    fun neighbours() = listOfNotNull(n, e, s, w)
+    open fun neighbours() = listOfNotNull(
+        if (canGoN()) n else null,
+        if (canGoE()) e else null,
+        if (canGoS()) s else null,
+        if (canGoW()) w else null,
+    )
 
     /**
      * Returns the Manhattan distance between this cell and the other one
      */
-    fun distanceTo(other: Cell<T>): Long = this.position.distanceTo(other.position)
+    fun distanceTo(other: T): Long = this.position.distanceTo(other.position)
+
+    /**
+     * Returns map with distances to reachable cells from X cell
+     * For example:
+     *
+     * @param neighbourFilter extra filter on neighbours
+     *
+     * 4321234
+     * 321X123
+     * 4321234
+     */
+    fun distanceMap(neighbourFilter: (T) -> Boolean = { true }): Map<T, Int> {
+        val distanceMap = mutableMapOf(current() to 0)
+        val points = LinkedList(listOf(Pair(this, 0)))
+
+        while (points.isNotEmpty()) {
+            val (point, distance) = points.pop()
+
+            point.neighbours()
+                .filter { !distanceMap.containsKey(it) && neighbourFilter(it) }
+                .forEach {
+                    distanceMap[it] = distance + 1
+                    points.add(Pair(it, distance + 1))
+                }
+        }
+
+        return distanceMap
+    }
+
+    /**
+     * Finding manhattan paths to destination cell
+     *
+     * @param destination cell
+     * @param neighbourFilter predicate for neighbour filtering
+     */
+    fun manhattanPaths(
+        destination: T,
+        neighbourFilter: (T) -> Boolean = { true }
+    ): List<Path<T>> {
+        val shortestPaths = mutableListOf<Path<T>>()
+        val distance = this.distanceTo(destination)
+
+        fun generatePaths(currPath: Path<T>, currCell: T) {
+            if (currCell == destination) {
+                shortestPaths.add(currPath)
+                return
+            }
+
+            if (currPath.connections + 1 <= distance) {
+                currCell.neighbours()
+                    .filter(neighbourFilter)
+                    .filter { it.distanceTo(destination) < currCell.distanceTo(destination) }
+                    .filter { !currPath.contains(it) }
+                    .forEach { generatePaths(currPath.add(it), it) }
+            }
+        }
+
+        generatePaths(Path(listOf(current())), current())
+        return shortestPaths
+    }
+
+    /**
+     * Finding paths to destination cell using A* search algorithm
+     *
+     * @param destination cell
+     * @param maxDistance represents the maximum length of the paths to search
+     * @param neighbourFilter predicate for neighbour filtering
+     */
+    fun shortestPaths(
+        destination: T,
+        maxDistance: Int = Int.MAX_VALUE,
+        neighbourFilter: (T) -> Boolean = { true }
+    ): List<Path<T>> {
+        if (this.distanceTo(destination) == maxDistance.toLong())
+            return manhattanPaths(destination, neighbourFilter)
+
+        val shortestPaths = mutableListOf<Path<T>>()
+        var shortestDistance = maxDistance
+
+        val paths = PriorityQueue<Path<T>>(compareBy { it.connections + it.end.distanceTo(destination) })
+        paths.add(Path(listOf(current())))
+
+        val visitedPaths = mutableMapOf<T, Int>()
+
+        while (paths.isNotEmpty()) {
+            val path = paths.poll()
+
+            // reached destination
+            if (destination == path.end) {
+                if (shortestDistance == path.connections) {
+                    shortestPaths.add(path)
+                } else if (shortestDistance > path.connections) {
+                    shortestDistance = path.connections
+                    shortestPaths.clear()
+                    shortestPaths.add(path)
+                } else {
+                    // path longer than existing
+                }
+            } else {
+                path.end.neighbours()
+                    .filter { neighbour -> !path.contains(neighbour) && neighbourFilter(neighbour) }
+                    .forEach { neighbour ->
+                        val nextPath = path.add(neighbour)
+
+                        if (nextPath.connections <= visitedPaths.getOrDefault(neighbour, Int.MAX_VALUE)) {
+                            // next path is at least as good as current best
+                            visitedPaths[neighbour] = nextPath.connections
+                            // no point to check paths longer then current shortest
+                            if (nextPath.connections <= shortestDistance) {
+                                paths.add(nextPath)
+                            }
+                        }
+                    }
+            }
+        }
+
+        return shortestPaths
+    }
 
     /**
      * Find direction from current cell its neighbour.
      */
-    fun findNeighbourDirection(neighbour: Cell<T>): Direction {
-        return when {
-            n === neighbour -> Direction.Up
-            s === neighbour -> Direction.Down
-            w === neighbour -> Direction.Left
-            e === neighbour -> Direction.Right
-            else -> throw RuntimeException("Unknown direction")
-        }
+    fun findNeighbourDirection(neighbour: Cell<T>): Direction = when {
+        n === neighbour -> Direction.N
+        s === neighbour -> Direction.S
+        w === neighbour -> Direction.W
+        e === neighbour -> Direction.E
+        else -> throw RuntimeException("Unknown direction")
     }
 
     /**
-     * Returns N, NE, E, SE, S, SW, W, NW neighbours.
+     * Returns N, NE, E, SE, S, SW, W, NW neighbours filtered by can go function
      */
-    fun neighboursAll() = listOfNotNull(n, ne, e, se, s, sw, w, nw)
+    open fun neighboursAll() = listOfNotNull(
+        if (canGoN()) n else null,
+        if (canGoNE()) ne else null,
+        if (canGoE()) e else null,
+        if (canGoSE()) se else null,
+        if (canGoS()) s else null,
+        if (canGoSW()) sw else null,
+        if (canGoW()) w else null,
+        if (canGoNW()) nw else null,
+    )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Cell<*>) return false
+        return this.position == other.position
+    }
+
+    override fun hashCode() = position.hashCode()
 }
 
 /**
@@ -114,6 +323,11 @@ class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
         return tempCells
     }
 
+    /**
+     * Returns true if position is located on the edge of the grid
+     *
+     * @param position to check location
+     */
     fun isPositionOnEdge(position: Position): Boolean {
         if (position.x == 0 || position.y == 0)
             return true
