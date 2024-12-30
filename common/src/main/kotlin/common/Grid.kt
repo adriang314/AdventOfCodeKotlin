@@ -324,6 +324,34 @@ class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
     }
 
     /**
+     * Print grid
+     */
+    fun print() {
+        for (y in 0..<height) {
+            for (x in 0..<width) {
+                print(cellMap[Position(x, y)]!!.value)
+            }
+            println()
+        }
+    }
+
+    /**
+     * Return grid as string
+     */
+    override fun toString(): String {
+        val builder = StringBuilder(width * (height + 2))
+        for (y in 0..<height) {
+            for (x in 0..<width) {
+                builder.append(cellMap[Position(x, y)]!!.value)
+            }
+            if (y < height - 1) {
+                builder.append("\r\n")
+            }
+        }
+        return builder.toString()
+    }
+
+    /**
      * Returns true if position is located on the edge of the grid
      *
      * @param position to check location
