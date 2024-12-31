@@ -1,9 +1,9 @@
 package year2024
 
-import common.*
-import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
-import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.SimpleDirectedGraph
+import common.BaseSolution
+import common.Cell
+import common.Grid
+import common.Position
 
 fun main() = println(SolutionDay18().result())
 
@@ -30,32 +30,11 @@ class SolutionDay18 : BaseSolution() {
 
     private fun findShortestPathLength(bytesToUse: Int): Int? {
         val bytes = bytePositions.take(bytesToUse)
-        lateinit var startPoint: Point
-        lateinit var endPoint: Point
-        val graph = SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge::class.java)
-
-        val gridBuilder = Grid.Builder(0..mapSize, 0..mapSize) { position ->
-            if (bytes.contains(position)) '#' else '.'
-        }
-
-        Grid(gridBuilder) { c, position -> Point(position, c) }.also { grid ->
-            grid.cells.forEach {
-                if (it.position == Position(0, 0)) startPoint = it
-                if (it.position == Position(mapSize, mapSize)) endPoint = it
-
-                graph.addVertex(it.position.toString())
-            }
-
-            grid.cells.forEach {
-                if (it.canGoN()) graph.addEdge(it.position, it.position.n())
-                if (it.canGoS()) graph.addEdge(it.position, it.position.s())
-                if (it.canGoW()) graph.addEdge(it.position, it.position.w())
-                if (it.canGoE()) graph.addEdge(it.position, it.position.e())
-            }
-        }
-
-        val algorithm = BidirectionalDijkstraShortestPath(graph)
-        return algorithm.getPath(startPoint.position, endPoint.position)?.length
+        val builder = Grid.Builder(0..mapSize, 0..mapSize) { position -> if (bytes.contains(position)) '#' else '.' }
+        val grid = Grid(builder) { c, position -> Point(position, c) }
+        val startPoint = grid.getCell(Position(0, 0))!!
+        val endPoint = grid.getCell(Position(mapSize, mapSize))!!
+        return startPoint.findShortestPath(endPoint)?.connections
     }
 
     private class Point(position: Position, c: Char) : Cell<Point>(position, c) {

@@ -1,9 +1,9 @@
 package year2024
 
-import common.*
-import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath
-import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.SimpleDirectedGraph
+import common.BaseSolution
+import common.Cell
+import common.Grid
+import common.Position
 import java.util.*
 import kotlin.math.absoluteValue
 
@@ -16,27 +16,13 @@ class SolutionDay20 : BaseSolution() {
     private val map = Grid(input()) { value, position -> Point(position, value) }
     private val startPoint = map.cells.single { it.value == 'S' }
     private val endPoint = map.cells.single { it.value == 'E' }
-    private val graph = SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge::class.java)
-    private val algorithm: BidirectionalDijkstraShortestPath<String, DefaultEdge>
     private val pathPlaces: Map<Point, Int> // value = length from start point
     private val pathLength: Int
 
     init {
-        map.cells.forEach {
-            graph.addVertex(it.position.toString())
-        }
-
-        map.cells.forEach {
-            if (it.canGoN()) graph.addEdge(it.position, it.position.n())
-            if (it.canGoS()) graph.addEdge(it.position, it.position.s())
-            if (it.canGoW()) graph.addEdge(it.position, it.position.w())
-            if (it.canGoE()) graph.addEdge(it.position, it.position.e())
-        }
-
-        algorithm = BidirectionalDijkstraShortestPath(graph)
-        val shortestPath = algorithm.getPath(startPoint.position, endPoint.position)!!
-        pathPlaces = shortestPath.vertexList.mapIndexed { idx, position -> map.getCell(position)!! to idx }.toMap()
-        pathLength = shortestPath.length
+        val shortestPath = startPoint.findShortestPath(endPoint)!!
+        pathPlaces = shortestPath.cells.mapIndexed { idx, point -> point to idx }.toMap()
+        pathLength = shortestPath.connections
     }
 
     override fun task1(): String {

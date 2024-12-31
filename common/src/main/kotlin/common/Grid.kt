@@ -11,7 +11,7 @@ class Path<T : Cell<T>>(val cells: List<T>) : Comparable<Path<T>> {
     }
 
     /**
-     * Number of connections between cells
+     * Number of connections (edges) between cells
      */
     val connections = cells.size - 1
     val start = cells.first()
@@ -145,7 +145,7 @@ abstract class Cell<T : Cell<T>>(val position: Position, var value: Char) {
     }
 
     /**
-     * Finding manhattan paths to destination cell
+     * Find manhattan paths to destination cell
      *
      * @param destination cell
      * @param neighbourFilter predicate for neighbour filtering
@@ -177,7 +177,45 @@ abstract class Cell<T : Cell<T>>(val position: Position, var value: Char) {
     }
 
     /**
-     * Finding paths to destination cell using A* search algorithm
+     * Find the shortest path to destination cell using Dijkstra
+     *
+     * @param destination cell
+     */
+    fun findShortestPath(destination: T): Path<T>? {
+        val distances = mutableMapOf<T, Int>().withDefault { Int.MAX_VALUE }
+        val previousCells = mutableMapOf<T, T?>()
+        val priorityQueue = PriorityQueue(compareBy<Pair<T, Int>> { it.second })
+
+        distances[current()] = 0
+        priorityQueue.add(current() to 0)
+
+        while (priorityQueue.isNotEmpty()) {
+            val (currentCell, currentDistance) = priorityQueue.poll()
+            if (currentCell == destination) {
+                val path = mutableListOf<T>()
+                var cell: T? = destination
+                while (cell != null) {
+                    path.add(cell)
+                    cell = previousCells[cell]
+                }
+                return Path(path.reversed())
+            }
+
+            currentCell.neighbours().forEach { neighbor ->
+                val newDistance = currentDistance + 1
+                if (newDistance < distances.getValue(neighbor)) {
+                    distances[neighbor] = newDistance
+                    previousCells[neighbor] = currentCell
+                    priorityQueue.add(neighbor to newDistance)
+                }
+            }
+        }
+
+        return null
+    }
+
+    /**
+     * Find all shortest paths to destination cell using A* search algorithm
      *
      * @param destination cell
      * @param maxDistance represents the maximum length of the paths to search
