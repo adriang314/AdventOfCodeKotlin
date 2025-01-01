@@ -1,6 +1,7 @@
 package year2018
 
 import common.BaseSolution
+import common.Register
 
 fun main() = println(SolutionDay16().result())
 
@@ -88,7 +89,7 @@ class SolutionDay16 : BaseSolution() {
             }
         }
 
-        val register = Register()
+        val register = Register(4)
         operationInfos.forEach { operationsMap[it.opcode]!!.single().execute(register, it) }
 
         val result = register.read(0)
@@ -187,29 +188,6 @@ class SolutionDay16 : BaseSolution() {
     private object EqRegisterRegisterOperation : Operation {
         override fun execute(register: Register, info: OperationInfo) {
             register.store(if (register.read(info.inputA) == register.read(info.inputB)) 1 else 0, info.outputC)
-        }
-    }
-
-    private data class Register(
-        private var reg0: Int = 0,
-        private var reg1: Int = 0,
-        private var reg2: Int = 0,
-        private var reg3: Int = 0
-    ) {
-        fun read(regId: Int): Int = when (regId) {
-            0 -> reg0
-            1 -> reg1
-            2 -> reg2
-            3 -> reg3
-            else -> throw RuntimeException("Unknown register id")
-        }
-
-        fun store(value: Int, regId: Int) = when (regId) {
-            0 -> reg0 = value
-            1 -> reg1 = value
-            2 -> reg2 = value
-            3 -> reg3 = value
-            else -> throw RuntimeException("Unknown register id")
         }
     }
 

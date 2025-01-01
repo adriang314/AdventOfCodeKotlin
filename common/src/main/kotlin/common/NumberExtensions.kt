@@ -16,6 +16,16 @@ fun Int.numberOfDigits(): Int =
         else -> 1 + (this / 10).numberOfDigits()
     }
 
+fun Long.sumOfAllDividers(): Long {
+    var sum = 0L
+    for (i in 1..this) {
+        if (this % i == 0L) {
+            sum += i
+        }
+    }
+    return sum
+}
+
 fun String.parseToInt() : Int {
     var number = this
     while (this.startsWith('0')) {
