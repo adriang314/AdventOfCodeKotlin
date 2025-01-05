@@ -47,6 +47,45 @@ class GridTest {
     }
 
     @Test
+    fun manhattanPathsLargeTest() {
+        val gridBuilder = Grid.Builder((0..10), (0..10)) { _ -> '.' }
+        val grid = Grid(gridBuilder) { c, position -> Point(position, c) }
+        val aPoint = grid.getCell(Position(0, 0))!!
+        val bPoint = grid.getCell(Position(1, 1))!!
+        val cPoint = grid.getCell(Position(2, 2))!!
+        val dPoint = grid.getCell(Position(3, 3))!!
+        val ePoint = grid.getCell(Position(4, 4))!!
+        val fPoint = grid.getCell(Position(5, 5))!!
+        val gPoint = grid.getCell(Position(6, 6))!!
+        val hPoint = grid.getCell(Position(7, 7))!!
+        val iPoint = grid.getCell(Position(8, 8))!!
+        val jPoint = grid.getCell(Position(9, 9))!!
+        val kPoint = grid.getCell(Position(10, 10))!!
+
+        val abPaths = aPoint.manhattanPaths(bPoint)
+        val acPaths = aPoint.manhattanPaths(cPoint)
+        val adPaths = aPoint.manhattanPaths(dPoint)
+        val aePaths = aPoint.manhattanPaths(ePoint)
+        val afPaths = aPoint.manhattanPaths(fPoint)
+        val agPaths = aPoint.manhattanPaths(gPoint)
+        val ahPaths = aPoint.manhattanPaths(hPoint)
+        val aiPaths = aPoint.manhattanPaths(iPoint)
+        val ajPaths = aPoint.manhattanPaths(jPoint)
+        val akPaths = aPoint.manhattanPaths(kPoint)
+
+        assertEquals(2, abPaths.size)
+        assertEquals(6, acPaths.size)
+        assertEquals(20, adPaths.size)
+        assertEquals(70, aePaths.size)
+        assertEquals(252, afPaths.size)
+        assertEquals(924, agPaths.size)
+        assertEquals(3432, ahPaths.size)
+        assertEquals(12870, aiPaths.size)
+        assertEquals(48620, ajPaths.size)
+        assertEquals(184756, akPaths.size)
+    }
+
+    @Test
     fun shortestPathsTest() {
         val abPaths = aPoint.shortestPaths(bPoint)
         val acPaths = aPoint.shortestPaths(cPoint)
