@@ -3,9 +3,9 @@ package common
 /**
  * Register class for storing values in registers
  */
-class Register(vararg values: Int) {
+class Register(vararg values: Long) {
 
-    constructor(size: Int) : this(*IntArray(size) { 0 })
+    constructor(size: Int) : this(*LongArray(size) { 0 })
 
     private val items = values
 
@@ -14,7 +14,7 @@ class Register(vararg values: Int) {
      *
      * @param regId register id
      */
-    fun read(regId: Int) = items[regId]
+    fun read(regId: Long) = items[regId.toInt()]
 
     /**
      * Store value in register
@@ -22,8 +22,8 @@ class Register(vararg values: Int) {
      * @param value value to store
      * @param regId register id
      */
-    fun store(value: Int, regId: Int) {
-        items[regId] = value
+    fun store(value: Long, regId: Long) {
+        items[regId.toInt()] = value
     }
 
     /**

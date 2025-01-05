@@ -21,11 +21,11 @@ class SolutionDay19 : BaseSolution() {
         val tmpOperationInfos = mutableListOf<OperationInfo>()
 
         val ipMatch = instructionPointerRegex.find(lines.first())!!
-        instructionPointer = InstructionPointer(ipMatch.groupValues[1].toInt())
+        instructionPointer = InstructionPointer(ipMatch.groupValues[1].toLong())
 
         lines.drop(1).forEach { line ->
             val (opcode, inputA, inputB, outputC) = operationRegex.find(line)!!.destructured
-            tmpOperationInfos.add(OperationInfo(opcode, inputA.toInt(), inputB.toInt(), outputC.toInt()))
+            tmpOperationInfos.add(OperationInfo(opcode, inputA.toLong(), inputB.toLong(), outputC.toLong()))
         }
 
         operationInfos = tmpOperationInfos
@@ -90,8 +90,8 @@ class SolutionDay19 : BaseSolution() {
                     break
                 }
 
-                val operationInfo = operations[ipValue]
-                val operation = getOperation(operationInfo.opcode)
+                val operationInfo = operations[ipValue.toInt()]
+                val operation = OperationSelector.get(operationInfo.opcode)
                 operation.execute(register, operationInfo)
                 instructionPointer.storeValue(register, instructionPointer.readValue(register) + 1)
 
@@ -102,127 +102,5 @@ class SolutionDay19 : BaseSolution() {
 //                }
             }
         }
-
-        private fun getOperation(opcode: String): Operation = when (opcode) {
-            "addr" -> AddRegisterOperation
-            "addi" -> AddImmediateOperation
-            "mulr" -> MulRegisterOperation
-            "muli" -> MulImmediateOperation
-            "banr" -> AndRegisterOperation
-            "bani" -> AndImmediateOperation
-            "borr" -> OrRegisterOperation
-            "bori" -> OrImmediateOperation
-            "setr" -> SetRegisterOperation
-            "seti" -> SetImmediateOperation
-            "gtir" -> GtImmediateRegisterOperation
-            "gtri" -> GtRegisterImmediateOperation
-            "gtrr" -> GtRegisterRegisterOperation
-            "eqir" -> EqImmediateRegisterOperation
-            "eqri" -> EqRegisterImmediateOperation
-            "eqrr" -> EqRegisterRegisterOperation
-            else -> throw IllegalArgumentException("Unknown opcode: $opcode")
-        }
     }
-
-    private interface Operation {
-        fun execute(register: Register, info: OperationInfo)
-    }
-
-    private object AddRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) =
-            register.store(register.read(info.inputA) + register.read(info.inputB), info.outputC)
-    }
-
-    private object AddImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(register.read(info.inputA) + info.inputB, info.outputC)
-        }
-    }
-
-    private object MulRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) =
-            register.store(register.read(info.inputA) * register.read(info.inputB), info.outputC)
-    }
-
-    private object MulImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(register.read(info.inputA) * info.inputB, info.outputC)
-        }
-    }
-
-    private object AndRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) =
-            register.store(register.read(info.inputA).and(register.read(info.inputB)), info.outputC)
-    }
-
-    private object AndImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(register.read(info.inputA).and(info.inputB), info.outputC)
-        }
-    }
-
-    private object OrRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) =
-            register.store(register.read(info.inputA).or(register.read(info.inputB)), info.outputC)
-    }
-
-    private object OrImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(register.read(info.inputA).or(info.inputB), info.outputC)
-        }
-    }
-
-    private object SetRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) =
-            register.store(register.read(info.inputA), info.outputC)
-    }
-
-    private object SetImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(info.inputA, info.outputC)
-        }
-    }
-
-    private object GtImmediateRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (info.inputA > register.read(info.inputB)) 1 else 0, info.outputC)
-        }
-    }
-
-    private object GtRegisterImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (register.read(info.inputA) > info.inputB) 1 else 0, info.outputC)
-        }
-    }
-
-    private object GtRegisterRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (register.read(info.inputA) > register.read(info.inputB)) 1 else 0, info.outputC)
-        }
-    }
-
-    private object EqImmediateRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (info.inputA == register.read(info.inputB)) 1 else 0, info.outputC)
-        }
-    }
-
-    private object EqRegisterImmediateOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (register.read(info.inputA) == info.inputB) 1 else 0, info.outputC)
-        }
-    }
-
-    private object EqRegisterRegisterOperation : Operation {
-        override fun execute(register: Register, info: OperationInfo) {
-            register.store(if (register.read(info.inputA) == register.read(info.inputB)) 1 else 0, info.outputC)
-        }
-    }
-
-    private data class InstructionPointer(val regId: Int) {
-        fun readValue(register: Register): Int = register.read(regId)
-        fun storeValue(register: Register, value: Int) = register.store(value, this.regId)
-    }
-
-    private data class OperationInfo(val opcode: String, val inputA: Int, val inputB: Int, val outputC: Int)
 }
