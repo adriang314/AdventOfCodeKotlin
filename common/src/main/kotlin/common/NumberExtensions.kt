@@ -26,7 +26,7 @@ fun Long.sumOfAllDividers(): Long {
     return sum
 }
 
-fun String.parseToInt() : Int {
+fun String.parseToInt(): Int {
     var number = this
     while (this.startsWith('0')) {
         number = number.substring(1)
@@ -37,7 +37,7 @@ fun String.parseToInt() : Int {
     return number.toInt()
 }
 
-fun String.parseToLong() : Long {
+fun String.parseToLong(): Long {
     var number = this
     while (this.startsWith('0')) {
         number = number.substring(1)
