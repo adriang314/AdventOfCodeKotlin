@@ -4,6 +4,22 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
+ * Find middle value of the range.
+ * In case of even number of items, returns lower one.
+ */
+fun IntRange.midValue(): Int {
+    return (this.last + this.first) / 2
+}
+
+/**
+ * Find middle value of the range.
+ * In case of even number of items, returns lower one.
+ */
+fun LongRange.midValue(): Long {
+    return (this.last + this.first) / 2L
+}
+
+/**
  * Ranges have intersection
  */
 fun IntRange.hasIntersection(other: IntRange): Boolean {
