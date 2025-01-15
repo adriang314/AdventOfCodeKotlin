@@ -11,6 +11,7 @@
 
     <modules>
         <module>common</module>
+        <module>year2017</module>
         <module>year2018</module>
         <module>year2019</module>
         <module>year2020</module>
