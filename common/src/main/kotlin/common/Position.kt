@@ -36,6 +36,13 @@ data class Position(val x: Int, val y: Int) : Comparable<Position> {
         Direction.E -> e()
     }
 
+    fun next(direction: Direction, steps: Int) = when (direction) {
+        Direction.N -> Position(x, y - steps)
+        Direction.S -> Position(x, y + steps)
+        Direction.W -> Position(x - steps, y)
+        Direction.E -> Position(x + steps, y)
+    }
+
     /**
      * Returns the Manhattan distance between this position and the other one
      */
@@ -91,6 +98,20 @@ enum class Direction {
             N -> if (this == S) 2 else 1
             S -> if (this == N) 2 else 1
         }
+    }
+
+    fun turnLeft() = when (this) {
+        N -> W
+        W -> S
+        S -> E
+        E -> N
+    }
+
+    fun turnRight() = when (this) {
+        N -> E
+        E -> S
+        S -> W
+        W -> N
     }
 
     companion object {
