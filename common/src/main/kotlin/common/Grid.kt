@@ -424,6 +424,47 @@ class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
     }
 
     /**
+     * Fills rectangle defined by xRange and yRange with given value
+     *
+     * @param xRange range on x-axis
+     * @param yRange range on y-axis
+     * @param value to fill rectangle with
+     */
+    fun fill(xRange: IntRange, yRange: IntRange, value: Char) {
+        for (y in yRange) {
+            for (x in xRange) {
+                getCell(x, y)?.value = value
+            }
+        }
+    }
+
+    /**
+     * Shifts row y by given shift amount
+     *
+     * @param y row index
+     * @param shift amount to shift
+     */
+    fun shiftRow(y: Int, shift: Int) {
+        val row = (0 until width).map { x -> getCell(x, y)!!.value }
+        for (x in 0 until width) {
+            getCell(x, y)?.value = row[((x - shift + width) % width)]
+        }
+    }
+
+    /**
+     * Shifts column x by given shift amount
+     *
+     * @param x column index
+     * @param shift amount to shift
+     */
+    fun shiftColumn(x: Int, shift: Int) {
+        val column = (0 until height).map { y -> getCell(x, y)!!.value }
+        for (y in 0 until height) {
+            getCell(x, y)?.value = column[(y - shift + height) % height]
+        }
+    }
+
+    /**
      * Grid builder class
      *
      * @param xRange range used as width  (0 ... width)
