@@ -1,7 +1,7 @@
 package year2016
 
 import common.BaseSolution
-import java.security.MessageDigest
+import common.Hash
 
 fun main() = println(SolutionDay05().result())
 
@@ -19,8 +19,6 @@ class SolutionDay05 : BaseSolution() {
 
     private class PasswordFinder {
         companion object {
-            private val md5Algorithm = MessageDigest.getInstance("MD5")
-
             fun findWithEightCharsUsingPosition(input: String, positionFromHash: Boolean): String {
                 val passwordChars = mutableMapOf<Int, Char>()
                 var searchIndex = 0
@@ -47,15 +45,13 @@ class SolutionDay05 : BaseSolution() {
                 var index = initialSuffix
                 while (true) {
                     val toHash = input + index.toString()
-                    val hash = md5(toHash)
+                    val hash = Hash.md5(toHash)
                     if (hash.startsWith("00000")) {
                         return Pair(index, hash)
                     }
                     index++
                 }
             }
-
-            private fun md5(input: String) = md5Algorithm.digest(input.toByteArray()).toHexString()
         }
     }
 }
