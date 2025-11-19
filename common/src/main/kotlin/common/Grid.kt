@@ -439,6 +439,21 @@ class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
     }
 
     /**
+     * Fills rectangle defined by xRange and yRange with given value function
+     *
+     * @param xRange range on x-axis
+     * @param yRange range on y-axis
+     * @param value to fill rectangle with
+     */
+    fun fill(xRange: IntRange, yRange: IntRange, value: (Char?) -> Char) {
+        for (y in yRange) {
+            for (x in xRange) {
+                getCell(x, y)?.value = value(getCell(x, y)?.value)
+            }
+        }
+    }
+
+    /**
      * Shifts row y by given shift amount
      *
      * @param y row index

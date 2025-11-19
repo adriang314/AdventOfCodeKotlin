@@ -44,6 +44,14 @@ data class Position(val x: Int, val y: Int) : Comparable<Position> {
     }
 
     /**
+     * Checks whether this position is within (x1...x2, y1...y2) range.
+     *
+     * @param xRange the range for x coordinate
+     * @param yRange the range for y coordinate
+     */
+    fun within(xRange: IntRange, yRange: IntRange) = xRange.contains(x) && yRange.contains(y)
+
+    /**
      * Returns the Manhattan distance between this position and the other one
      */
     fun distanceTo(other: Position): Long {
