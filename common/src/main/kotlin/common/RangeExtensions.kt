@@ -66,6 +66,42 @@ fun LongRange.intersection(other: LongRange): LongRange {
 }
 
 /**
+ * Subtracts other range from this range and returns list of remaining ranges
+ */
+fun IntRange.difference(other: IntRange): List<IntRange> {
+    val result = mutableListOf<IntRange>()
+    if (!this.hasIntersection(other)) {
+        result.add(this)
+        return result
+    }
+    if (this.first < other.first) {
+        result.add(this.first until other.first)
+    }
+    if (this.last > other.last) {
+        result.add((other.last + 1)..this.last)
+    }
+    return result
+}
+
+/**
+ * Subtracts other range from this range and returns list of remaining ranges
+ */
+fun LongRange.difference(other: LongRange): List<LongRange> {
+    val result = mutableListOf<LongRange>()
+    if (!this.hasIntersection(other)) {
+        result.add(this)
+        return result
+    }
+    if (this.first < other.first) {
+        result.add(this.first until other.first)
+    }
+    if (this.last > other.last) {
+        result.add((other.last + 1)..this.last)
+    }
+    return result
+}
+
+/**
  * Returns the length of the range - number of elements
  */
 fun IntRange.length() = if (this == IntRange.EMPTY) 0 else this.last - this.first + 1
