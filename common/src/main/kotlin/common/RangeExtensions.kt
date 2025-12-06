@@ -66,6 +66,68 @@ fun LongRange.intersection(other: LongRange): LongRange {
 }
 
 /**
+ * Can two ranges be merged into a single range
+ *
+ * @return true if they can be merged; otherwise false
+ */
+fun LongRange.canBeMergedIntoSingleRange(other: LongRange): Boolean {
+    return this.hasIntersection(other) || this.last + 1 == other.first || other.last + 1 == this.first
+}
+
+/**
+ * Merges two ranges into a single range if possible
+ *
+ * @return null if they cannot be merged; otherwise the merged range
+ */
+fun LongRange.tryMergeIntoSingleRange(other: LongRange): LongRange? {
+    return if (canBeMergedIntoSingleRange(other)) {
+        val first = min(this.first, other.first)
+        val last = max(this.last, other.last)
+        LongRange(first, last)
+    } else {
+        null
+    }
+}
+
+/**
+ * Combines two ranges into one or two ranges
+ */
+fun LongRange.combine(other: LongRange): List<LongRange> {
+    return tryMergeIntoSingleRange(other)?.let { listOf(it) } ?: listOf(this, other).sortedBy { it.first }
+}
+
+/**
+ * Combines this range with list of other ranges
+ */
+fun LongRange.combine(others: List<LongRange>): List<LongRange> {
+    return others.fold(listOf(this)) { acc, next -> acc.flatMap { it.combine(next) }.merge() }
+}
+
+/**
+ * Merges overlapping or contiguous ranges in the list
+ */
+fun List<LongRange>.merge(): List<LongRange> {
+    if (this.size < 2)
+        return this
+
+    val merged = mutableListOf<LongRange>()
+    for (nextRange in this) {
+        var toAdd = nextRange
+        val toRemove = mutableListOf<LongRange>()
+        for (existing in merged) {
+            existing.tryMergeIntoSingleRange(toAdd)?.let {
+                toAdd = it
+                toRemove.add(existing)
+            }
+        }
+        merged.removeAll(toRemove)
+        merged.add(toAdd)
+    }
+
+    return merged
+}
+
+/**
  * Subtracts other range from this range and returns list of remaining ranges
  */
 fun IntRange.difference(other: IntRange): List<IntRange> {
