@@ -13,6 +13,13 @@ data class Point3D(val x: Long, val y: Long, val z: Long) {
     fun shiftZ(shift: Long) = Point3D(x, y, z + shift)
 
     fun distanceTo(other: Point3D) = abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
+
+    fun euclideanDistance(other: Point3D): Double {
+        val dx = (x - other.x).toDouble()
+        val dy = (y - other.y).toDouble()
+        val dz = (z - other.z).toDouble()
+        return kotlin.math.sqrt(dx * dx + dy * dy + dz * dz)
+    }
 }
 
 class Parallelogram(val x: LongRange, val y: LongRange, val z: LongRange) {
