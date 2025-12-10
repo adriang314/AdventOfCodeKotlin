@@ -36,6 +36,7 @@
         <commons-math3.version>3.6.1</commons-math3.version>
         <jgrapht-core.version>1.5.2</jgrapht-core.version>
         <guava.version>33.5.0-jre</guava.version>
+        <z3-turnkey.version>4.14.1</z3-turnkey.version>
     </properties>
 
     <repositories>
@@ -131,6 +132,11 @@
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
             <version>${jgrapht-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tools.aqua</groupId>
+            <artifactId>z3-turnkey</artifactId>
+            <version>${z3-turnkey.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
