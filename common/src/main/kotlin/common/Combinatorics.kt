@@ -24,5 +24,30 @@ class Combinatorics {
                 result.add(item.clone())
             }
         }
+
+        fun <T> combinations(items: Set<T>, size: Int): List<Set<T>> {
+            require(size >= 0) { "Size must be non-negative" }
+            if (size == 0) return listOf(emptySet())
+            if (size > items.size) return emptyList()
+
+            val itemList = items.toList()
+
+            fun combine(start: Int, current: MutableList<T>, result: MutableList<Set<T>>) {
+                if (current.size == size) {
+                    result.add(current.toSet())
+                    return
+                }
+
+                for (i in start until itemList.size) {
+                    current.add(itemList[i])
+                    combine(i + 1, current, result)
+                    current.removeAt(current.lastIndex)
+                }
+            }
+
+            val result = mutableListOf<Set<T>>()
+            combine(0, mutableListOf(), result)
+            return result
+        }
     }
 }
