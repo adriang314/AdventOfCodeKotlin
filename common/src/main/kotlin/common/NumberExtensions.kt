@@ -52,6 +52,21 @@ fun Long.isEven(): Boolean = this % 2L == 0L
 
 fun Int.isEven(): Boolean = this % 2 == 0
 
+fun Long.divisors(): Sequence<Long> = sequence {
+    var i = 1L
+    while (i * i <= this@divisors) {
+        if (this@divisors % i == 0L) {
+            yield(i)
+
+            val other = this@divisors / i
+            if (other != i) {
+                yield(other)
+            }
+        }
+        i++
+    }
+}
+
 private fun power(base: Long, exponent: Int): Long {
     var result: Long = 1
     repeat(exponent) {
