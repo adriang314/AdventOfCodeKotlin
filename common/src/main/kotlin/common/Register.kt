@@ -7,6 +7,11 @@ class Register(vararg values: Long) {
 
     constructor(size: Int) : this(*LongArray(size) { 0 })
 
+    private val names = if ('z'.code - 'a'.code + 1 >= values.size)
+        values.indices.associateBy { index -> ('a'.code + index).toChar() }
+    else
+        emptyMap()
+
     private val items = values
 
     /**
@@ -17,6 +22,13 @@ class Register(vararg values: Long) {
     fun read(regId: Long) = items[regId.toInt()]
 
     /**
+     * Read value from register
+     *
+     * @param regName register name
+     */
+    fun read(regName: Char) = items[names[regName]!!]
+
+    /**
      * Store value in register
      *
      * @param value value to store
@@ -24,6 +36,16 @@ class Register(vararg values: Long) {
      */
     fun store(value: Long, regId: Long) {
         items[regId.toInt()] = value
+    }
+
+    /**
+     * Store value in register
+     *
+     * @param value value to store
+     * @param regName register name
+     */
+    fun store(value: Long, regName: Char) {
+        items[names[regName]!!] = value
     }
 
     /**
