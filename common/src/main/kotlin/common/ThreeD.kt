@@ -6,6 +6,8 @@ data class Point3D(val x: Long, val y: Long, val z: Long) {
 
     fun shiftAll(shift: Long) = Point3D(x + shift, y + shift, z + shift)
 
+    fun shift(shift: Point3D) = Point3D(x + shift.x, y + shift.y, z + shift.z)
+
     fun shiftX(shift: Long) = Point3D(x + shift, y, z)
 
     fun shiftY(shift: Long) = Point3D(x, y + shift, z)
