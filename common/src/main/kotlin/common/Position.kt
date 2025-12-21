@@ -108,6 +108,13 @@ enum class Direction {
         }
     }
 
+    fun turnBack() = when(this) {
+        N -> S
+        W -> E
+        S -> N
+        E -> W
+    }
+
     fun turnLeft() = when (this) {
         N -> W
         W -> S

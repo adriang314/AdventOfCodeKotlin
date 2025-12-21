@@ -112,6 +112,16 @@ abstract class Cell<T : Cell<T>>(val position: Position, var value: Char) {
     )
 
     /**
+     * Return N, E, S, W neighbours filtered by can go function with direction from this cell
+     */
+    fun neighboursWithDirection() = listOfNotNull(
+        if (canGoN()) Pair(Direction.N, n!!) else null,
+        if (canGoE()) Pair(Direction.E, e!!) else null,
+        if (canGoS()) Pair(Direction.S, s!!) else null,
+        if (canGoW()) Pair(Direction.W, w!!) else null,
+    )
+
+    /**
      * Returns the Manhattan distance between this cell and the other one
      */
     fun distanceTo(other: T): Long = this.position.distanceTo(other.position)
@@ -317,8 +327,8 @@ class Grid<T : Cell<T>>(builder: Builder, cellFactory: (Char, Position) -> T) {
             this(input.lines().let {
                 val lines = input.lines().map { it.toList() }
                 val yRange = lines.indices
-                val xRange = lines.first().indices
-                Builder(xRange, yRange) { position -> lines[position.y][position.x] }
+                val xRange = 0..lines.maxOf { it.size - 1 }
+                Builder(xRange, yRange) { position -> lines.getOrNull(position.y)?.getOrNull(position.x) ?: ' ' }
             }, cellFactory)
 
     private val cellMap: Map<Position, T> = buildCells(builder, cellFactory)
