@@ -52,6 +52,10 @@ fun Long.isEven(): Boolean = this % 2L == 0L
 
 fun Int.isEven(): Boolean = this % 2 == 0
 
+fun Int.isPrime(): Boolean = (2..this / 2).none { this % it == 0 }
+
+fun Long.isPrime(): Boolean = (2L..this / 2L).none { this % it == 0L }
+
 fun Long.divisors(): Sequence<Long> = sequence {
     var i = 1L
     while (i * i <= this@divisors) {
