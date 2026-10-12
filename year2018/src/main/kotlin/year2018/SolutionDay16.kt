@@ -38,7 +38,7 @@ class SolutionDay16 : BaseSolution() {
             } else if (line.startsWith("After:")) {
                 val (reg0, reg1, reg2, reg3) = registryRegex.find(line)!!.destructured
                 after = Register(reg0.toLong(), reg1.toLong(), reg2.toLong(), reg3.toLong())
-                tmpExamples.add(Example(before!!, after!!, operationInfo!!))
+                tmpExamples.add(Example(before!!, after, operationInfo!!))
                 before = null
                 operationInfo = null
                 after = null
@@ -46,7 +46,7 @@ class SolutionDay16 : BaseSolution() {
                 val (opcode, inputA, inputB, outputC) = operationRegex.find(line)!!.destructured
                 operationInfo = OperationInfo(opcode, inputA.toLong(), inputB.toLong(), outputC.toLong())
                 if (before == null) {
-                    tmpOperationInfos.add(operationInfo!!)
+                    tmpOperationInfos.add(operationInfo)
                     operationInfo = null
                 }
             }

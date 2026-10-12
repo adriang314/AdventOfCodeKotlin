@@ -29,10 +29,10 @@ class SolutionDay04 : BaseSolution() {
             if (regexGuard.matches(line.text)) {
                 val (id) = regexGuard.find(line.text)!!.destructured
                 currGuard = guards.firstOrNull { it.id == id.toInt() } ?: Guard(id.toInt())
-                currGuard!!.shifts.add(Shift(line.date))
+                currGuard.shifts.add(Shift(line.date))
 
                 if (!guards.contains(currGuard))
-                    guards.add(currGuard!!)
+                    guards.add(currGuard)
             } else if (regexGuardSleeps.matches(line.text)) {
                 currAsleep = line.date
             } else if (regexGuardWakesUp.matches(line.text)) {
