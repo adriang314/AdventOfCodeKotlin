@@ -12,6 +12,12 @@ class LinkedListWithCache<E> {
         var next: Node<E>?
     )
 
+    constructor()
+
+    constructor(items: Iterable<E>) {
+        items.forEach { add(it) }
+    }
+
     fun forEach(action: (E) -> Unit) {
         var currElement = head
         while (currElement != null) {
@@ -56,6 +62,16 @@ class LinkedListWithCache<E> {
     fun add(element: E) = linkTail(element)
 
     fun remove(element: E) = unlink(map[element]!!)
+
+    fun removeAfter(element: E, offset: Int): E {
+        var node = map[element]!!
+
+        repeat(offset) {
+            node = node.next ?: head!!
+        }
+
+        return unlink(node)
+    }
 
     fun size() = size
 
@@ -113,6 +129,7 @@ class LinkedListWithCache<E> {
     private fun unlinkHead() {
         head?.let {
             val next = it.next
+            map.remove(it.element)
             it.next = null
             head = next
             if (next == null) {
@@ -127,6 +144,7 @@ class LinkedListWithCache<E> {
     private fun unlinkTail() {
         tail?.let {
             val prev = it.prev
+            map.remove(it.element)
             it.prev = null
             tail = prev
             if (prev == null) {
@@ -142,6 +160,8 @@ class LinkedListWithCache<E> {
         val element = curr.element
         val next = curr.next
         val prev = curr.prev
+
+        map.remove(element)
 
         if (prev == null) {
             head = next
