@@ -8,79 +8,106 @@ fun main() = println(SolutionDay16().result())
 class SolutionDay16 : BaseSolution() {
 
     override val day = 16
-    
-    private val inputSignal = input().toList().map { it.digitToInt() }
-    private val inputSignal10000 = input().let { input ->
-        val builder = StringBuilder(input.length * 10_000)
-        repeat(10_000) {
-            builder.append(input)
-        }
-        builder.toString()
-    }.toList().map { it.digitToInt() }
 
-    private val inputSignal10000Offset = inputSignal.take(7).joinToString("").toInt()
+    private val numberOfPhases = 100
+    private val signalRepeatCount = 10_000
+    private val msgLength = 8
+    private val initialSignal = Signal(input().map { it.digitToInt() }.toIntArray())
+    private val repeatedSignal: Signal
+    private val messageOffset = input().take(7).toInt()
+
+    init {
+        val totalLength = initialSignal.length * signalRepeatCount
+        repeatedSignal = Signal(IntArray(totalLength - messageOffset) { index -> initialSignal.digits[(messageOffset + index) % initialSignal.length] })
+    }
 
     override fun task1(): String {
-        var input = inputSignal
-        repeat(100) {
-            input = executePhase(input)
+        var signal = initialSignal
+
+        repeat(numberOfPhases) {
+            signal = signal.executePhase()
         }
-        val result = input.take(8).joinToString("") { it.toString() }
-        return result
+
+        return signal.firstDigits(msgLength)
     }
 
     override fun task2(): String {
-        var input = inputSignal10000
-        repeat(100) {
-            println("Phase $it")
-            input = executePhase2(input, inputSignal10000Offset)
+        var signal = repeatedSignal
+
+        repeat(numberOfPhases) {
+            signal = signal.executePhase2()
         }
 
-        val result = input.drop(inputSignal10000Offset).take(8).joinToString("") { it.toString() }
-        return result
+        return signal.firstDigits(msgLength)
     }
 
-    private fun executePhase2(input: List<Int>, offset: Int): List<Int> {
-        var lastSum = 0
-        return (input.size - 1 downTo 0).map { position ->
-            // no need to know digits before offset
-            if (position < offset) {
-                0
-            } else {
-                lastSum = (lastSum + input[position]) % 10
-                lastSum
+    private data class Block(val startIdx: Int, val endIdxExclusive: Int, val value: Int)
+
+    private class AscendingSums(private val digits: IntArray) {
+        private val sums: IntArray = IntArray(digits.size + 1)
+
+        init {
+            for (index in digits.indices) {
+                sums[index + 1] = sums[index] + digits[index]
             }
-        }.reversed()
+        }
+
+        fun sumOf(block: Block): Int {
+            val end = minOf(block.endIdxExclusive, digits.size)
+            if (block.startIdx >= end)
+                return 0
+
+            return (sums[end] - sums[block.startIdx]) * block.value
+        }
     }
 
-    private fun executePhase(input: List<Int>): List<Int> {
-        return List(input.size) { position ->
-            var sum = 0L
-            for (index in input.indices) {
-                val repeatValue = BasePattern.instance.getForPosition(position, index)
-                when (repeatValue) {
-                    0 -> Unit
-                    -1 -> sum -= input[index]
-                    1 -> sum += input[index]
-                    else -> throw RuntimeException("x")
+    private class Signal(val digits: IntArray) {
+        // base pattern 0,1,0,-1
+        private val basePatternLength = 4
+        // when applying the pattern, skip the very first value exactly once
+        private val negativeBlockOffset = 2
+
+        val length: Int get() = digits.size
+
+        fun firstDigits(count: Int): String = digits.take(count).joinToString("")
+
+        fun executePhase(): Signal {
+            val sums = AscendingSums(digits)
+            val nextSignalDigits = IntArray(length)
+
+            for (outputPosition in digits.indices) {
+                val blockLength = outputPosition + 1
+                var sum = 0
+                var blockStart = outputPosition
+
+                while (blockStart < length) {
+                    val positiveBlock = Block(blockStart, blockStart + blockLength, 1)
+                    sum += sums.sumOf(positiveBlock)
+
+                    val negativeBlockStart = blockStart + negativeBlockOffset * blockLength
+                    if (negativeBlockStart < length) {
+                        val negativeBlock = Block(negativeBlockStart, negativeBlockStart + blockLength, -1)
+                        sum += sums.sumOf(negativeBlock)
+                    }
+
+                    blockStart += basePatternLength * blockLength
                 }
+
+                nextSignalDigits[outputPosition] = abs(sum) % 10
             }
 
-            (abs(sum) % 10).toInt()
-        }
-    }
-
-    private class BasePattern {
-        private val baseValue = listOf(0, 1, 0, -1)
-
-        fun getForPosition(position: Int, index: Int): Int = if (position == 0) {
-            baseValue[(index + 1) % baseValue.size]
-        } else {
-            baseValue[((index + 1) / (position + 1)) % baseValue.size]
+            return Signal(nextSignalDigits)
         }
 
-        companion object {
-            val instance = BasePattern()
+        fun executePhase2(): Signal {
+            // Optimized phase for a signal suffix whose original offset is in the second half of the complete signal.
+            var cumulativeSum = 0
+            for (index in digits.lastIndex downTo 0) {
+                cumulativeSum = (cumulativeSum + digits[index]) % 10
+                digits[index] = cumulativeSum
+            }
+
+            return this
         }
     }
 }
