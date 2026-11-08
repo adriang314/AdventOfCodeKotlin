@@ -18,7 +18,7 @@ class SolutionDay17 : BaseSolution() {
     }
 
     override fun task2(): String {
-        val machine = Machine(spinLock)
+        val machine = SimplifiedMachine(spinLock)
         (1..50_000_000).forEach { machine.addItem(it) }
         return machine.itemAfterZero().toString()
     }
@@ -34,7 +34,23 @@ class SolutionDay17 : BaseSolution() {
         }
 
         fun itemAfterCurrent(): Int = items.getAfter(currentItem, 1)
+    }
 
-        fun itemAfterZero(): Int = items.getAfter(0, 1)
+    private class SimplifiedMachine(private val spinlock: Int) {
+        private var size = 1
+        private var currPosition = 0
+        private var itemAfterZero: Int? = null
+
+        fun addItem(value: Int) {
+            val nextItemPosition = (currPosition + spinlock) % size + 1
+            if (nextItemPosition == 1) {
+                itemAfterZero = value
+            }
+
+            currPosition = nextItemPosition
+            size++
+        }
+
+        fun itemAfterZero() = itemAfterZero
     }
 }
