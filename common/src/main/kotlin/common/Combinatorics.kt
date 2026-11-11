@@ -25,7 +25,7 @@ class Combinatorics {
             }
         }
 
-        fun <T> combinations(items: Set<T>, size: Int): List<Set<T>> {
+        fun <T> combinations(items: Collection<T>, size: Int): List<Set<T>> {
             require(size >= 0) { "Size must be non-negative" }
             if (size == 0) return listOf(emptySet())
             if (size > items.size) return emptyList()

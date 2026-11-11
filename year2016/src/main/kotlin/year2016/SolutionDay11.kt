@@ -1,7 +1,7 @@
 package year2016
 
 import common.BaseSolution
-import common.pow
+import common.Combinatorics
 
 fun main() = println(SolutionDay11().result())
 
@@ -33,14 +33,14 @@ class SolutionDay11 : BaseSolution() {
 
         companion object {
             fun from(input: String): FacilityState {
-                val floors = input.split("\r\n").mapIndexed { index, line -> Floor(number = index + 1, items = Generator.from(line).plus(Microchip.from(line)).toMutableList()) }
+                val floors = input.split("\r\n").mapIndexed { index, line -> Floor(number = index + 1, items = Items(Generator.from(line).plus(Microchip.from(line)).toMutableList())) }
                 return FacilityState(floors)
             }
         }
 
         fun stepsToAssembleMachine(): Int {
-            val statesToTest = ArrayDeque<FacilityState>(listOf(this))
-            val stateTested = mutableMapOf<Long, Int>()
+            val statesToTest = ArrayDeque(listOf(this))
+            val visited = mutableSetOf(code())
 
             while (statesToTest.isNotEmpty()) {
                 val currentState = statesToTest.removeFirst()
@@ -48,20 +48,13 @@ class SolutionDay11 : BaseSolution() {
                     return currentState.iteration
                 }
 
-//                if (statesToTest.size % 1000 == 0) {
-//                    println("States to test: ${statesToTest.size}, tested: ${stateTested.size}, current iteration: ${currentState.iteration}")
-//                }
-
                 for (move in currentState.availableElevatorMoves()) {
                     val nextState = currentState.clone()
                     nextState.executeElevatorMove(move)
-                    val code = nextState.index()
-                    val existingIteration = stateTested[code]
-                    if (existingIteration != null && existingIteration <= nextState.iteration) {
-                        continue
-                    }
-                    stateTested[code] = nextState.iteration
-                    statesToTest.addLast(nextState)
+                    val code = nextState.code()
+
+                    if (visited.add(code))
+                        statesToTest.addLast(nextState)
                 }
             }
 
@@ -69,16 +62,24 @@ class SolutionDay11 : BaseSolution() {
         }
 
         /**
-         * A unique index for the current state of the facility
-         * This index is calculated based on the current floor of the elevator and the items on each floor.
-         * The index is used to identify unique states of the facility to avoid re-processing the same state.
-         * Each item contributes to the index based on its type and the floor it is on.
-         * The formula used ensures that different configurations of items and elevator positions yield different indices.
-         * @see Item.index
-         *
-         * @return Long - unique index representing the current state of the facility
+         * Element names are ignored because swapping element names does not change the problem.
          */
-        private fun index(): Long = elevatorCurrentFloor.toLong() + floors.sumOf { floor -> floor.items.sumOf { item -> item.index(floor) } }
+        private fun code(): String {
+            val positions = mutableMapOf<String, GeneratorAndMicrochipPosition>()
+
+            floors.forEach { floor ->
+                floor.items.forEach { item ->
+                    val position = positions.getOrPut(item.name) { GeneratorAndMicrochipPosition(item.name) }
+                    if (item.isGenerator) {
+                        position.generatorFloor = floor.number
+                    } else {
+                        position.microchipFloor = floor.number
+                    }
+                }
+            }
+
+            return "$elevatorCurrentFloor|" + positions.values.sorted().joinToString(",") { "${it.generatorFloor}${it.microchipFloor}" }
+        }
 
         private fun readyToAssemble(): Boolean = floors.filter { !it.isLastFloor }.all { it.items.isEmpty() }
 
@@ -89,25 +90,18 @@ class SolutionDay11 : BaseSolution() {
             if (!currentFloor.isLastFloor) directions.add(ElevatorMove.Direction.Up)
             if (!currentFloor.isFirstFloor) directions.add(ElevatorMove.Direction.Down)
 
-            val itemsOnCurrentFloor = currentFloor.items
             for (direction in directions) {
-                // single item moves
-                for (item in itemsOnCurrentFloor) {
-                    if (direction == ElevatorMove.Direction.Down && lowerElevatorFloor().items.isEmpty())
-                        continue
+                if (direction == ElevatorMove.Direction.Down && lowerElevatorFloor().items.isEmpty())
+                    continue
 
-                    if (isMoveSafe(direction, item))
-                        moves.add(ElevatorMove(direction, setOf(item)))
-                }
-                // two items move
-                for (i in itemsOnCurrentFloor.indices) {
-                    for (j in i + 1 until itemsOnCurrentFloor.size) {
-                        if (direction == ElevatorMove.Direction.Down && lowerElevatorFloor().items.isEmpty())
-                            continue
-
-                        if (isMoveSafe(direction, itemsOnCurrentFloor.elementAt(i), itemsOnCurrentFloor.elementAt(j)))
-                            moves.add(ElevatorMove(direction, setOf(itemsOnCurrentFloor.elementAt(i), itemsOnCurrentFloor.elementAt(j))))
+                for (items in currentFloor.items.combinations()) {
+                    val isSafe = when (direction) {
+                        ElevatorMove.Direction.Up -> currentFloor.items.minus(items).areSafe() && upperElevatorFloor().items.plus(items).areSafe()
+                        ElevatorMove.Direction.Down -> currentFloor.items.minus(items).areSafe() && lowerElevatorFloor().items.plus(items).areSafe()
                     }
+
+                    if (isSafe)
+                        moves.add(ElevatorMove(direction, items))
                 }
             }
 
@@ -130,48 +124,34 @@ class SolutionDay11 : BaseSolution() {
             iteration++
         }
 
-        private fun clone(): FacilityState {
-            return FacilityState(floors.map { it.clone() }, elevatorCurrentFloor, iteration)
-        }
+        private fun clone(): FacilityState = FacilityState(floors.map { it.clone() }, elevatorCurrentFloor, iteration)
 
         private fun currentElevatorFloor(): Floor = floors[elevatorCurrentFloor - 1]
 
         private fun upperElevatorFloor(): Floor = floors[elevatorCurrentFloor]
 
         private fun lowerElevatorFloor(): Floor = floors[elevatorCurrentFloor - 2]
-
-        private fun isMoveSafe(direction: ElevatorMove.Direction, itemToMove: Item): Boolean {
-            val isCurrentFloorSafe = Items.areSafe(currentElevatorFloor().items.minus(itemToMove))
-            if (!isCurrentFloorSafe)
-                return false
-
-            return when (direction) {
-                ElevatorMove.Direction.Up -> Items.areSafe(upperElevatorFloor().items.plus(itemToMove))
-                ElevatorMove.Direction.Down -> Items.areSafe(lowerElevatorFloor().items.plus(itemToMove))
-            }
-        }
-
-        private fun isMoveSafe(direction: ElevatorMove.Direction, itemToMove1: Item, itemToMove2: Item): Boolean {
-            val isCurrentFloorSafe = Items.areSafe(currentElevatorFloor().items.minus(itemToMove1).minus(itemToMove2))
-            if (!isCurrentFloorSafe)
-                return false
-
-            return when (direction) {
-                ElevatorMove.Direction.Up -> Items.areSafe(upperElevatorFloor().items.plus(itemToMove1).plus(itemToMove2))
-                ElevatorMove.Direction.Down -> Items.areSafe(lowerElevatorFloor().items.plus(itemToMove1).plus(itemToMove2))
-            }
-        }
     }
 
-    private class Floor(val number: Int, val items: MutableList<Item> = mutableListOf()) {
+    private class Floor(val number: Int, val items: Items = Items()) {
         val isFirstFloor = number == 1
         val isLastFloor = number == 4
 
-        fun clone(): Floor = Floor(number, items.toMutableList())
+        fun clone(): Floor = Floor(number, items.clone())
     }
 
     private data class ElevatorMove(val direction: Direction, val items: Set<Item>) {
         enum class Direction { Up, Down }
+    }
+
+    private data class GeneratorAndMicrochipPosition(val name: String, var generatorFloor: Int = 0, var microchipFloor: Int = 0) : Comparable<GeneratorAndMicrochipPosition> {
+        override fun compareTo(other: GeneratorAndMicrochipPosition): Int {
+            val generatorComparison = generatorFloor.compareTo(other.generatorFloor)
+            if (generatorComparison != 0)
+                return generatorComparison
+
+            return microchipFloor.compareTo(other.microchipFloor)
+        }
     }
 
     private interface Item {
@@ -179,47 +159,50 @@ class SolutionDay11 : BaseSolution() {
         val name: String
         val isGenerator: Boolean
         val isMicrochip: Boolean
-        val type: String
-
-        /**
-         * Calculate a unique index for the item based on its type, id, and the floor it is on.
-         * This index is used to uniquely identify the item's contribution to the facility's state.
-         * The formula ensures that different items on different floors yield different indices.
-         *
-         * @param floor Floor - the floor on which the item is located
-         * @return Long - unique index representing the item's contribution to the facility's state
-         */
-        fun index(floor: Floor): Long {
-            return floor.number * 10L.pow(this.id)
-        }
     }
 
-    private interface Items {
+    private data class Items(val list: MutableList<Item> = mutableListOf()) : Iterable<Item> {
+
+        override fun iterator(): Iterator<Item> = list.iterator()
+
+        fun combinations(): List<Set<Item>> = Combinatorics.combinations(list, 1) + Combinatorics.combinations(list, 2)
+
+        fun isEmpty(): Boolean = list.isEmpty()
+
+        fun addAll(items: Collection<Item>) = list.addAll(items)
+
+        fun removeAll(items: Collection<Item>) = list.removeAll(items.toSet())
+
+        fun minus(items: Set<Item>): Items = Items(list.filterNot { it in items }.toMutableList())
+
+        fun plus(items: Set<Item>): Items = Items((list + items).toMutableList())
+
+        fun clone(): Items = Items(list.toMutableList())
+
+        fun areSafe(): Boolean {
+            for (item in list) {
+                if (item.isMicrochip) {
+                    val hasGenerator = list.any { it.name == item.name && it.isGenerator }
+                    if (hasGenerator)
+                        continue
+
+                    val hasOtherGenerators = list.any { it.name != item.name && it.isGenerator }
+                    if (hasOtherGenerators)
+                        return false
+                }
+            }
+
+            return true
+        }
+
         companion object {
             var nextId: Int = 1
-
-            fun areSafe(items: List<Item>): Boolean {
-                for (item in items) {
-                    if (item.isMicrochip) {
-                        val hasGenerator = items.any { it.name == item.name && it.isGenerator }
-                        if (hasGenerator)
-                            continue
-
-                        val hasOtherGenerators = items.any { it.name != item.name && it.isGenerator }
-                        if (hasOtherGenerators)
-                            return false
-                    }
-                }
-
-                return true
-            }
         }
     }
 
     private data class Generator(override val name: String, override val id: Int) : Item {
         override val isGenerator = true
         override val isMicrochip = false
-        override val type = "generator"
 
         companion object {
             fun from(input: String): List<Generator> {
@@ -234,7 +217,6 @@ class SolutionDay11 : BaseSolution() {
     private data class Microchip(override val name: String, override val id: Int) : Item {
         override val isGenerator = false
         override val isMicrochip = true
-        override val type = "microchip"
 
         companion object {
             fun from(input: String): List<Microchip> {
