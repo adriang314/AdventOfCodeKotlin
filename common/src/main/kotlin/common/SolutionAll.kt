@@ -5,10 +5,16 @@ import java.io.File
 class SolutionAll(private val packageName: String) {
 
     private val solutions = solutions()
+    private val classNameRegex = Regex("""SolutionDay(\d+)""")
 
-    fun run() = solutions.forEach { println(it.result()) }
+    fun run() {
+        solutions.forEach { solution ->
+            val instance = solution.getDeclaredConstructor().newInstance()
+            println(instance.result())
+        }
+    }
 
-    private fun solutions(): List<BaseSolution> {
+    private fun solutions(): List<Class<out BaseSolution>> {
         val packagePath = packageName.replace('.', '/')
         val classLoader = this::class.java.classLoader
         val classNames = mutableListOf<String>()
@@ -41,10 +47,12 @@ class SolutionAll(private val packageName: String) {
         return classNames.distinct().mapNotNull { name ->
             val clazz = Class.forName(name, false, classLoader)
             if (BaseSolution::class.java.isAssignableFrom(clazz) && clazz != BaseSolution::class.java) {
-                clazz.asSubclass(BaseSolution::class.java).getDeclaredConstructor().newInstance()
+                clazz.asSubclass(BaseSolution::class.java)
             } else {
                 null
             }
-        }.sortedBy { it.day }
+        }.sortedBy { clazz ->
+            classNameRegex.find(clazz.simpleName)!!.groupValues[1].toInt()
+        }
     }
 }
