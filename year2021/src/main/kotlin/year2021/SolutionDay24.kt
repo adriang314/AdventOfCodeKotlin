@@ -1,5 +1,7 @@
 package year2021
 
+import com.microsoft.z3.Context
+import com.microsoft.z3.Status
 import common.*
 
 fun main() = println(SolutionDay24().result())
@@ -7,30 +9,70 @@ fun main() = println(SolutionDay24().result())
 class SolutionDay24 : BaseSolution() {
 
     override val day = 24
-    
-    override fun task1(): String {
-        val stack = ArrayDeque<String>()
-        val equations = mutableListOf<String>()
-        for (i in 1..14) {
-            val operation = operationGroups[i - 1]
-            if (operation.paramA == 1) {
-                stack.add("w$i + ${operation.paramC}")
-            } else if (operation.paramA == 26) {
-                val top = stack.removeLast()
-                equations.add("w$i = $top ${operation.paramB}")
+
+    override fun task1(): String = solve(maximize = true)
+
+    override fun task2(): String = solve(maximize = false)
+
+    private fun solve(maximize: Boolean): String {
+        Context().use { ctx ->
+            val solver = ctx.mkSolver()
+            val digits = (1..14).associateWith { ctx.mkIntConst("w$it") }
+
+            // Each digit must be between 1 and 9
+            digits.values.forEach {
+                solver.add(ctx.mkGe(it, ctx.mkInt(1)), ctx.mkLe(it, ctx.mkInt(9)))
             }
+
+            val stack = ArrayDeque<Pair<Int, Int>>()
+            val equations = mutableListOf<Pair<Int, Int>>()
+
+            for (i in 1..14) {
+                val operation = operationGroups[i - 1]
+
+                if (operation.paramA == 1) {
+                    stack.addLast(i to operation.paramC)
+                } else if (operation.paramA == 26) {
+                    val (previousIndex, previousC) = stack.removeLast()
+                    equations.add(i to previousIndex)
+
+                    val current = digits[i]!!
+                    val previous = digits[previousIndex]!!
+
+                    // w[i] = w[previousIndex] + previousC + paramB
+                    solver.add(ctx.mkEq(current, ctx.mkAdd(previous, ctx.mkInt(previousC + operation.paramB))))
+                }
+            }
+
+            check(stack.isEmpty()) { "Invalid MONAD stack" }
+
+            for (i in 1..14) {
+                val digit = digits[i]!!
+                var best = -1
+                val candidates = if (maximize) 9 downTo 1 else 1..9
+                for (candidate in candidates) {
+                    solver.push()
+                    solver.add(ctx.mkEq(digit, ctx.mkInt(candidate)))
+                    val satisfiable = solver.check() == Status.SATISFIABLE
+                    solver.pop()
+                    if (satisfiable) {
+                        best = candidate
+                        break
+                    }
+                }
+
+                check(best != -1) { "No solution found" }
+
+                solver.add(ctx.mkEq(digit, ctx.mkInt(best)))
+            }
+
+            check(solver.check() == Status.SATISFIABLE)
+
+            return (1..14).joinToString("") { solver.model.eval(digits[it]!!, true).toString() }
         }
-
-        equations.forEach { println(it) }
-
-        return "99919692496939"
     }
 
-    override fun task2(): String {
-        return "81914111161714"
-    }
-
-    private var operationGroups: List<OperationGroup>
+    private val operationGroups: List<OperationGroup>
 
     init {
         var i = 0
@@ -45,7 +87,7 @@ class SolutionDay24 : BaseSolution() {
             else
                 Operation(lineParts[0], "w" + ++i, "")
         }
-        operationGroups = (0 until 14).map { idx -> OperationGroup(operations.drop(idx * 18).take(18)) }
+        operationGroups = (0..<14).map { idx -> OperationGroup(operations.drop(idx * 18).take(18)) }
     }
 
     data class OperationGroup(val operations: List<Operation>) {
