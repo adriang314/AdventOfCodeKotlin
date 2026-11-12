@@ -4,19 +4,26 @@ import kotlin.system.measureTimeMillis
 
 abstract class BaseSolution {
 
+    private val creationTimestamp = System.currentTimeMillis()
+
     protected fun input() = BaseSolution::class.java.getResource("/inputDay$day")!!.readText()
 
     abstract val day: Int
 
-    fun result() = "DAY $day: ${measureTask(::task1)}, ${measureTask(::task2)}"
+    fun result(): String {
+        val startTimestamp = System.currentTimeMillis()
+        val creationMillis = startTimestamp - creationTimestamp
+
+        return "DAY $day: ${measureTask(creationMillis) { task1() }}, ${measureTask(creationMillis) { task2() }}"
+    }
 
     abstract fun task1(): String
 
     abstract fun task2(): String
 
-    private fun measureTask(task: () -> String): String {
+    private fun measureTask(creationMillis: Long, task: () -> String): String {
         var result: String
-        val time = measureTimeMillis { result = task() }
+        val time = creationMillis + measureTimeMillis { result = task() }
         return "$result in ${time}ms"
     }
 }
