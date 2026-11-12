@@ -39,16 +39,18 @@ class SolutionDay19 : BaseSolution() {
 
         fun nextElfWithPresents(elf: Elf): Elf = elves.getAfter(elf, 1)
 
-        fun oppositeElfWithPresents(elf: Elf): Elf = elves.getAfter(elf, elves.size() / 2)
+        fun oppositeElfWithPresents(elf: Elf): Elf = if (elves.size() % 2 == 0) elves.getAfter(elf, 1) else elf
 
         var currElf = elves.getFirst()!!
+        var currOppositeElf = elves.getAfter(currElf, elves.size() / 2)
         while (elves.size() > 1) {
-            val oppositeElf = oppositeElfWithPresents(currElf)
-            elves.remove(oppositeElf)
+            val nextElfAfterOpposite = elves.getAfter(currOppositeElf, 1)
+            elves.remove(currOppositeElf)
             currElf = nextElfWithPresents(currElf)
+            currOppositeElf = oppositeElfWithPresents(nextElfAfterOpposite)
         }
 
-        return elves.getFirst()!!.id.toString()
+        return currElf.id.toString()
     }
 
     private data class Elf(val id: Int, var hasPresents: Boolean = true)
