@@ -26,7 +26,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>2.4.20</kotlin.version>
+        <kotlin.version>2.4.21</kotlin.version>
         <kotlinx-coroutines-core.version>1.11.0</kotlinx-coroutines-core.version>
         <kotlinx-serialization.version>1.11.0</kotlinx-serialization.version>
         <rxkotlin.version>3.0.1</rxkotlin.version>
@@ -34,8 +34,8 @@
         <combinatoricslib3.version>3.4.0</combinatoricslib3.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <jgrapht-core.version>1.5.3</jgrapht-core.version>
-        <guava.version>33.7.2-jre</guava.version>
-        <z3-turnkey.version>4.14.1</z3-turnkey.version>
+        <guava.version>33.8.0-jre</guava.version>
+        <z3-turnkey.version>5.3.3</z3-turnkey.version>
     </properties>
 
     <repositories>
