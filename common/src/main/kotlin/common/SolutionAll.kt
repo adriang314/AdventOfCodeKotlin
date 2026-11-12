@@ -4,8 +4,8 @@ import java.io.File
 
 class SolutionAll(private val packageName: String) {
 
-    private val solutions = solutions()
     private val classNameRegex = Regex("""SolutionDay(\d+)""")
+    private val solutions = solutions()
 
     fun run() {
         solutions.forEach { solution ->
