@@ -1,5 +1,7 @@
 package year2023
 
+import com.microsoft.z3.Context
+import com.microsoft.z3.Status
 import common.BaseSolution
 
 fun main() = println(SolutionDay24().result())
@@ -16,7 +18,7 @@ class SolutionDay24 : BaseSolution() {
 
         var crossed = 0
         for (i in hailStones.indices) {
-            for (j in i + 1 until hailStones.size) {
+            for (j in i + 1..<hailStones.size) {
                 val h1 = hailStones[i]
                 val h2 = hailStones[j]
                 val cross = Cross(h1, h2)
@@ -30,20 +32,48 @@ class SolutionDay24 : BaseSolution() {
     }
 
     override fun task2(): String {
-        val equations = hailStones.take(3).mapIndexed { i, hailStone ->
-            "t$i >= 0, " +
-                    "${hailStone.p1.x} + ${hailStone.velocity.x}*t$i == x + vx*t$i, " +
-                    "${hailStone.p1.y} + ${hailStone.velocity.y}*t$i == y + vy*t$i, " +
-                    "${hailStone.p1.z} + ${hailStone.velocity.z}*t$i == z + vz*t$i"
+        Context(mapOf("model" to "true")).use { ctx ->
+            val solver = ctx.mkSolver()
 
-        }.joinToString(", ")
+            // position of stone
+            val x = ctx.mkIntConst("x")
+            val y = ctx.mkIntConst("y")
+            val z = ctx.mkIntConst("z")
 
-//        mathematica result
-//        {{x -> 239756157786030, y -> 463222539161932, z -> 273997500449219,
-//            vx -> 47, vy -> -360, vz -> 18, t0 -> 666003776903,
-//            t1 -> 654152070134, t2 -> 779453185471}}
+            // stone velocity
+            val vx = ctx.mkIntConst("vx")
+            val vy = ctx.mkIntConst("vy")
+            val vz = ctx.mkIntConst("vz")
 
-        return "976976197397181 = Solve[{$equations}, {x,y,z,vx,vy,vz,t0,t1,t2}]"
+            hailStones.forEachIndexed { i, hail ->
+                val time = ctx.mkIntConst("t$i")
+                val timeNonNegative = ctx.mkGe(time, ctx.mkInt(0))
+
+                val equations = listOf(
+                    ctx.mkEq(
+                        ctx.mkAdd(ctx.mkInt(hail.p1.x), ctx.mkMul(ctx.mkInt(hail.velocity.x), time)),
+                        ctx.mkAdd(x, ctx.mkMul(vx, time))
+                    ),
+                    ctx.mkEq(
+                        ctx.mkAdd(ctx.mkInt(hail.p1.y), ctx.mkMul(ctx.mkInt(hail.velocity.y), time)),
+                        ctx.mkAdd(y, ctx.mkMul(vy, time))
+                    ),
+                    ctx.mkEq(
+                        ctx.mkAdd(ctx.mkInt(hail.p1.z), ctx.mkMul(ctx.mkInt(hail.velocity.z), time)),
+                        ctx.mkAdd(z, ctx.mkMul(vz, time))
+                    )
+                )
+
+                solver.add(timeNonNegative)
+                solver.add(*equations.toTypedArray())
+            }
+
+            return when (solver.check()) {
+                Status.SATISFIABLE -> listOf(x, y, z).sumOf { solver.model.eval(it, true).toString().toLong() }.toString()
+                Status.UNSATISFIABLE -> "UNSATISFIABLE"
+                Status.UNKNOWN -> "UNKNOWN: ${solver.reasonUnknown}"
+            }
+        }
     }
 
     private var hailStones: List<HailStone>
